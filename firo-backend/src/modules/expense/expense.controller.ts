@@ -53,4 +53,45 @@ export class ExpenseController {
       )
     );
   }
+
+
+
+  static async updateExpense(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+  const expense =
+    await ExpenseService.updateExpense(
+      req.params.expenseId as string,
+      req.user!.userId,
+      req.body.title,
+      req.body.amount,
+      req.body.category
+    );
+
+  res.status(200).json(
+    new ApiResponse(
+      true,
+      "Expense updated",
+      expense
+    )
+  );
+}
+
+static async deleteExpense(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+  await ExpenseService.deleteExpense(
+    req.params.expenseId as string,
+    req.user!.userId
+  );
+
+  res.status(200).json(
+    new ApiResponse(
+      true,
+      "Expense deleted"
+    )
+  );
+}
 }

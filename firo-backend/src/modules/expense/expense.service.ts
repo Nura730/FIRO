@@ -111,4 +111,72 @@ export class ExpenseService {
         createdAt: -1,
       });
   }
+
+
+  static async updateExpense(
+  expenseId: string,
+  userId: string,
+  title: string,
+  amount: number,
+  category: string
+) {
+  const expense =
+    await Expense.findById(expenseId);
+
+  if (!expense) {
+    throw new AppError(
+      "Expense not found",
+      404
+    );
+  }
+
+  if (
+    expense.createdBy.toString() !==
+    userId
+  ) {
+    throw new AppError(
+      "Unauthorized",
+      403
+    );
+  }
+
+  expense.title = title;
+  expense.amount = amount;
+  expense.category = category;
+
+  await expense.save();
+
+  return expense;
+}
+
+
+
+static async deleteExpense(
+  expenseId: string,
+  userId: string
+) {
+  const expense =
+    await Expense.findById(expenseId);
+
+  if (!expense) {
+    throw new AppError(
+      "Expense not found",
+      404
+    );
+  }
+
+  if (
+    expense.createdBy.toString() !==
+    userId
+  ) {
+    throw new AppError(
+      "Unauthorized",
+      403
+    );
+  }
+
+  await Expense.findByIdAndDelete(
+    expenseId
+  );
+}
 }

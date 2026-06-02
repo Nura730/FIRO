@@ -26,4 +26,20 @@ router.get(
   )
 );
 
+router.put(
+  "/:expenseId",
+  authenticate,
+  asyncHandler(
+    ExpenseController.updateExpense
+  )
+);
+
+router.delete(
+  "/:expenseId",
+  authenticate,
+  asyncHandler(
+    ExpenseController.deleteExpense
+  )
+);
+
 export default router;

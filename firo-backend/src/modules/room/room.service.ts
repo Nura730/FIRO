@@ -167,4 +167,58 @@ static async deleteRoom(
 
   await Room.findByIdAndDelete(roomId);
 }
+
+
+static async transferOwnership(
+  roomId: string,
+  ownerId: string,
+  newOwnerId: string
+) {
+  const room =
+    await Room.findById(roomId);
+
+  if (!room) {
+    throw new AppError(
+      "Room not found",
+      404
+    );
+  }
+
+  if (
+    room.ownerId.toString() !==
+    ownerId
+  ) {
+    throw new AppError(
+      "Only owner can transfer ownership",
+      403
+    );
+  }
+
+  room.ownerId =
+    new Types.ObjectId(
+      newOwnerId
+    );
+
+  room.members.forEach(
+    (member) => {
+      if (
+        member.userId.toString() ===
+        newOwnerId
+      ) {
+        member.role = "OWNER";
+      }
+
+      if (
+        member.userId.toString() ===
+        ownerId
+      ) {
+        member.role = "MEMBER";
+      }
+    }
+  );
+
+  await room.save();
+
+  return room;
+}
 }
