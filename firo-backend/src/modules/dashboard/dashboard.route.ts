@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { SettlementController } from "./settlement.controller";
+import { DashboardController } from "./dashboard.controller";
 
 import { authenticate } from "../../middlewares/auth.middleware";
 import { asyncHandler } from "../../utils/asyncHandler";
@@ -11,7 +11,7 @@ router.get(
   "/room/:roomId",
   authenticate,
   asyncHandler(
-    SettlementController.getRoomSettlement
+    DashboardController.getRoomDashboard
   )
 );
 

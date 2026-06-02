@@ -1,24 +1,24 @@
 import { Response } from "express";
 
-import { SettlementService } from "./settlement.service";
+import { DashboardService } from "./dashboard.service";
 import { ApiResponse } from "../../utils/apiResponse";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 
-export class SettlementController {
-  static async getRoomSettlement(
+export class DashboardController {
+  static async getRoomDashboard(
     req: AuthRequest,
     res: Response
   ): Promise<void> {
-    const result =
-      await SettlementService.calculateRoomSettlement(
+    const dashboard =
+      await DashboardService.getRoomDashboard(
         req.params.roomId as string
       );
 
     res.status(200).json(
       new ApiResponse(
         true,
-        "Settlement calculated",
-        result
+        "Dashboard fetched successfully",
+        dashboard
       )
     );
   }

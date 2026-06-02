@@ -8,6 +8,8 @@ import authRoutes from "./modules/auth/auth.route";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import roomRoutes from "./modules/room/room.route";
 import expenseRoutes from "./modules/expense/expense.route";
+import settlementRoutes from "./modules/settlement/settlement.route";
+import dashboardRoutes from "./modules/dashboard/dashboard.route";
 
 const app: Application = express();
 
@@ -56,6 +58,14 @@ app.use("/api/rooms", roomRoutes);
 app.use(
   "/api/expenses",
   expenseRoutes
+);
+app.use(
+  "/api/settlements",
+  settlementRoutes
+);
+app.use(
+  "/api/dashboard",
+  dashboardRoutes
 );
 
 app.use(errorMiddleware);

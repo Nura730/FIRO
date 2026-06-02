@@ -4,6 +4,11 @@ import mongoose, {
   Types,
 } from "mongoose";
 
+export interface IExpenseSplit {
+  userId: Types.ObjectId;
+  amount: number;
+}
+
 export interface IExpense extends Document {
   roomId: Types.ObjectId;
   title: string;
@@ -11,9 +16,29 @@ export interface IExpense extends Document {
   category: string;
   paidBy: Types.ObjectId;
   createdBy: Types.ObjectId;
+  splits: IExpenseSplit[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+const splitSchema = new Schema<IExpenseSplit>(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    amount: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+  },
+  {
+    _id: false,
+  }
+);
 
 const expenseSchema = new Schema<IExpense>(
   {
@@ -26,13 +51,11 @@ const expenseSchema = new Schema<IExpense>(
     title: {
       type: String,
       required: true,
-      trim: true,
     },
 
     amount: {
       type: Number,
       required: true,
-      min: 1,
     },
 
     category: {
@@ -59,6 +82,8 @@ const expenseSchema = new Schema<IExpense>(
       ref: "User",
       required: true,
     },
+
+    splits: [splitSchema],
   },
   {
     timestamps: true,

@@ -14,6 +14,7 @@ export class ExpenseController {
       title,
       amount,
       category,
+      splits,
     } = req.body;
 
     const expense =
@@ -22,7 +23,8 @@ export class ExpenseController {
         roomId,
         title,
         amount,
-        category
+        category,
+        splits
       );
 
     res.status(201).json(
@@ -38,10 +40,9 @@ export class ExpenseController {
     req: AuthRequest,
     res: Response
   ): Promise<void> {
-    const { roomId } = req.params as { roomId: string };
     const expenses =
       await ExpenseService.getRoomExpenses(
-        roomId
+        req.params.roomId as string
       );
 
     res.status(200).json(

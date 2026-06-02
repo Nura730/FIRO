@@ -3,8 +3,11 @@ import { z } from "zod";
 export const createExpenseSchema = z.object({
   body: z.object({
     roomId: z.string(),
-    title: z.string().min(2).max(100),
+
+    title: z.string(),
+
     amount: z.number().positive(),
+
     category: z.enum([
       "RENT",
       "FOOD",
@@ -13,5 +16,12 @@ export const createExpenseSchema = z.object({
       "INTERNET",
       "OTHER",
     ]),
+
+    splits: z.array(
+      z.object({
+        userId: z.string(),
+        amount: z.number().min(0),
+      })
+    ),
   }),
 });
