@@ -16,6 +16,8 @@ body {
   font-family: Inter, system-ui, sans-serif;
   background-color: #f8fafc;
   color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 button {
@@ -32,4 +34,18 @@ button,
 textarea,
 select {
   font: inherit;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* iOS bottom safe-area paddings */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }

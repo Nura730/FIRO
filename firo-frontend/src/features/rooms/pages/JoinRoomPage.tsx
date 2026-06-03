@@ -20,7 +20,7 @@ export default function JoinRoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4">
+    <div className="h-full overflow-y-auto bg-slate-50 p-4">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

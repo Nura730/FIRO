@@ -85,7 +85,7 @@ export default function RoomSelectionPage() {
   const otherRooms = rooms.filter((r: any) => r._id !== roomId);
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 pb-20">
+    <div className="h-full overflow-y-auto bg-slate-50 p-4 pb-20 no-scrollbar">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
