@@ -100,14 +100,14 @@ export default function ExpensesPage() {
   };
 
   return (
-    <div className="w-full py-8 px-2 space-y-8">
+    <div className="w-full py-4 space-y-6">
       {/* 1. Header & Search Toggle */}
       <div className="flex justify-between items-center pl-0.5">
         <div>
           <span className="text-[10px] font-bold tracking-widest text-[#22C55E] uppercase pl-0.5">
             {room?.roomName}
           </span>
-          <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 mt-1">
+          <h1 className="text-4xl font-extrabold tracking-tight text-white mt-1">
             Expenses
           </h1>
         </div>
@@ -116,9 +116,11 @@ export default function ExpensesPage() {
           variant="outline"
           size="icon"
           onClick={() => setSearchOpen(!searchOpen)}
-          className={`h-11 w-11 rounded-full p-0 shrink-0 ${
-            searchOpen ? "bg-[#22C55E]/10 border-[#22C55E]/30 text-[#22C55E] hover:bg-[#22C55E]/15" : ""
-          }`}
+          className={`h-11 w-11 rounded-full border-white/10 bg-white/5 text-white ${
+  searchOpen
+    ? "border-[#22C55E]/30 bg-[#22C55E]/10 text-[#22C55E]"
+    : ""
+}`}
         >
           <Search size={18} />
         </Button>
@@ -138,7 +140,7 @@ export default function ExpensesPage() {
               placeholder="Search by description..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full"
+              className="border-white/10 bg-white/5 text-white placeholder:text-zinc-500"
             />
           </motion.div>
         )}
@@ -155,7 +157,7 @@ export default function ExpensesPage() {
               className={`text-xs font-bold px-4.5 py-2 rounded-full border whitespace-nowrap transition-all active:scale-95 ${
                 isSelected
                   ? "bg-[#22C55E] border-[#22C55E] text-white shadow-sm"
-                  : "bg-white border-zinc-200 text-zinc-500 hover:border-zinc-300"
+                  : "bg-white/5 border-white/10 text-zinc-500 hover:border-zinc-300"
               }`}
             >
               {cat}
@@ -182,8 +184,8 @@ export default function ExpensesPage() {
           }
         />
       ) : (
-        <Card>
-          <CardContent className="p-0 divide-y divide-zinc-150">
+        <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
+          <CardContent className="p-0 divide-y divide-white/5">
             {filtered.map((expense: any) => {
               const isExpanded = expandedExpenseId === expense._id;
               const creatorId = expense.createdBy?._id || expense.createdBy;
@@ -202,7 +204,7 @@ export default function ExpensesPage() {
                 <div
                   key={expense._id}
                   onClick={() => handleRowClick(expense._id)}
-                  className="p-5 cursor-pointer active:bg-zinc-50/50 transition-colors"
+                  className="p-5 cursor-pointer hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3.5 min-w-0">
@@ -213,17 +215,17 @@ export default function ExpensesPage() {
 
                       {/* Details */}
                       <div className="min-w-0 space-y-0.5">
-                        <h4 className="font-bold text-zinc-900 text-sm truncate">
+                        <h4 className="font-bold text-white text-sm truncate">
                           {expense.title}
                         </h4>
-                        <p className="text-xs text-zinc-400 font-semibold">
+                        <p className="text-xs text-zinc-500 font-semibold">
                           Paid by {expense.paidBy?.name || "Unknown"} • {dateStr}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0 ml-3">
-                      <p className="font-bold text-zinc-900 font-mono text-base">
+                      <p className="font-bold text-white font-mono text-base">
                         ₹{expense.amount?.toLocaleString("en-IN")}
                       </p>
                       <span className="text-zinc-300">
@@ -240,11 +242,11 @@ export default function ExpensesPage() {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.15 }}
-                        className="overflow-hidden mt-4 pt-4 border-t border-zinc-100"
+                        className="overflow-hidden mt-4 pt-4 border-t border-white/10"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="space-y-3.5">
-                          <span className="text-[9px] font-black tracking-widest text-zinc-400 uppercase">
+                          <span className="text-[9px] font-black tracking-widest text-zinc-500 uppercase">
                             splits breakdown
                           </span>
 
@@ -252,7 +254,7 @@ export default function ExpensesPage() {
                             {expense.splits?.map((split: any, sIdx: number) => (
                               <div key={sIdx} className="flex justify-between text-xs text-zinc-650 font-bold">
                                 <span>{split.userId?.name || "Unknown"}</span>
-                                <span className="font-mono text-zinc-900">₹{split.amount?.toLocaleString("en-IN")}</span>
+                                <span className="font-mono text-white">₹{split.amount?.toLocaleString("en-IN")}</span>
                               </div>
                             ))}
                           </div>
@@ -295,12 +297,12 @@ export default function ExpensesPage() {
       {/* Floating Action Button (FAB) */}
       <div className="fixed bottom-24 right-5 z-40">
         <button
-          onClick={openAddModal}
-          title="Add expense"
-          className="w-14 h-14 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all text-lg font-bold"
-        >
-          <Plus size={24} />
-        </button>
+  onClick={openAddModal}
+  title="Add expense"
+  className="w-16 h-16 rounded-full bg-[#22C55E] text-white flex items-center justify-center shadow-[0_0_40px_rgba(34,197,94,0.45)] hover:scale-105 active:scale-95 transition-all"
+>
+  <Plus size={26} />
+</button>
       </div>
 
       {/* Expense Form Modal */}

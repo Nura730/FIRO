@@ -110,32 +110,41 @@ export default function RoomSelectionPage() {
   };
 
   return (
-    <div className="w-full py-8 px-2 space-y-10">
+   <div className="w-full py-4 space-y-6">
       {/* 1. Brand Greeting Header */}
-      <div className="flex justify-between items-start">
-        <div>
-          <span className="text-[10px] font-bold tracking-widest text-[#22C55E] uppercase pl-0.5">
-            {getGreeting()}
-          </span>
-          <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 mt-1">
-            Rooms
-          </h1>
-        </div>
+      <motion.div
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  className="flex items-start justify-between"
+>
+  <div>
+    <p className="text-xs uppercase tracking-[0.3em] text-[#22C55E] font-bold">
+      {getGreeting()}
+    </p>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 font-bold"
-        >
-          <LogOut size={13} />
-          Logout
-        </Button>
-      </div>
+    <h1 className="mt-2 text-4xl font-black text-white">
+      Rooms
+    </h1>
+
+    <p className="mt-1 text-sm text-zinc-400">
+      Manage your shared expense spaces.
+    </p>
+  </div>
+
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={handleLogout}
+    className="border-white/10 bg-white/5 text-white hover:bg-white/10"
+  >
+    <LogOut size={14} />
+    Logout
+  </Button>
+</motion.div>
 
       {/* 2. Room Switcher Section */}
       <div className="space-y-4">
-        <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase pl-0.5">
+        <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase pl-0.5">
           Select Room
         </span>
 
@@ -160,16 +169,16 @@ export default function RoomSelectionPage() {
                 <Card
                   key={r._id}
                   onClick={() => handleSelectRoom(r)}
-                  className={`cursor-pointer hover:border-zinc-300 transition-all ${
-                    isActive ? "border-[#22C55E] ring-1 ring-[#22C55E]/10" : ""
+                  className={`cursor-pointer border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:border-[#22C55E]/30 ${
+                    isActive ? "border-[#22C55E] shadow-[0_0_20px_rgba(34,197,94,0.15)]" : ""
                   }`}
                 >
                   <CardContent className="flex items-center justify-between p-5">
                     <div className="min-w-0 space-y-1">
-                      <h4 className="font-bold text-base text-zinc-900 truncate">
+                      <h4 className="font-bold text-base text-white truncate">
                         {r.name}
                       </h4>
-                      <p className="text-xs text-zinc-500 font-semibold">
+                      <p className="text-xs text-zinc-400 font-semibold">
                         {r.members?.length || 1} roommate{(r.members?.length || 1) !== 1 ? "s" : ""} • Code: {r.inviteCode}
                       </p>
                     </div>
@@ -192,23 +201,23 @@ export default function RoomSelectionPage() {
       </div>
 
       {/* 3. Rooms Primary Actions */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <Button
-          onClick={() => navigate("/rooms/create")}
-          className="flex items-center justify-center gap-2"
-        >
-          <Plus size={16} />
-          Create Room
-        </Button>
+  onClick={() => navigate("/rooms/create")}
+  className="h-14 rounded-2xl bg-[#22C55E] font-bold"
+>
+  <Plus size={16} />
+  Create Room
+</Button>
 
         <Button
-          variant="outline"
-          onClick={() => navigate("/rooms/join")}
-          className="flex items-center justify-center gap-2"
-        >
-          <KeyRound size={16} />
-          Join Room
-        </Button>
+  variant="outline"
+  onClick={() => navigate("/rooms/join")}
+  className="h-14 rounded-2xl border-white/10 bg-white/5 text-white"
+>
+  <KeyRound size={16} />
+  Join Room
+</Button>
       </div>
 
       {/* 4. Room Members & Settings */}
@@ -219,17 +228,19 @@ export default function RoomSelectionPage() {
           transition={{ duration: 0.15 }}
           className="space-y-4 pt-4"
         >
-          <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase pl-0.5">
+          <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase pl-0.5">
             Active Room settings ({activeRoom.name})
           </span>
 
-          <Card>
-            <CardContent className="p-0 divide-y divide-zinc-100">
+          <Card
+            className="border-white/10 bg-white/5 backdrop-blur-xl"
+          >
+            <CardContent className="p-0 divide-y divide-white/10">
               {/* Copy Invite Code widget */}
               <div className="flex justify-between items-center p-5">
                 <div className="space-y-0.5">
                   <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Invite Code</p>
-                  <p className="font-mono text-base font-extrabold text-zinc-800">{activeRoom.inviteCode}</p>
+                  <p className="font-mono text-base font-extrabold text-white">{activeRoom.inviteCode}</p>
                 </div>
                 <Button
                   variant="outline"
@@ -269,18 +280,18 @@ export default function RoomSelectionPage() {
                           className="flex items-center justify-between py-1"
                         >
                           <div className="min-w-0">
-                            <p className="text-sm font-bold text-zinc-850 truncate">
+                            <p className="text-sm font-bold text-white truncate">
                               {memberName} {isMe && "(You)"}
                             </p>
-                            <p className="text-xs text-zinc-400 font-semibold truncate">{memberEmail}</p>
+                            <p className="text-xs text-zinc-400 font-medium truncate">{memberEmail}</p>
                           </div>
 
                           <div className="flex items-center gap-3 shrink-0">
                             <span
                               className={`text-[9px] font-black tracking-wider px-2 py-0.5 rounded-md uppercase ${
                                 role === "OWNER"
-                                  ? "bg-amber-50 text-amber-600 border border-amber-200"
-                                  : "bg-zinc-50 text-zinc-500"
+                                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                  : "bg-white/5 text-zinc-400 border border-white/10"
                               }`}
                             >
                               {role}
@@ -295,7 +306,7 @@ export default function RoomSelectionPage() {
                                   title="Transfer ownership"
                                   className="h-8 w-8 p-0"
                                 >
-                                  <RefreshCw size={12} className="text-zinc-500" />
+                                  <RefreshCw size={12} className="text-zinc-400" />
                                 </Button>
                                 <Button
                                   variant="ghost"

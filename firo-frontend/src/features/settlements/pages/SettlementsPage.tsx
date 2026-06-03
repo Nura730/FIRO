@@ -62,13 +62,13 @@ export default function SettlementsPage() {
   };
 
   return (
-    <div className="w-full py-8 px-2 space-y-8">
+    <div className="w-full py-4 space-y-6">
       {/* Header Context */}
       <div className="pl-0.5">
         <span className="text-[10px] font-bold tracking-widest text-[#22C55E] uppercase pl-0.5">
           {room?.roomName}
         </span>
-        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 mt-1">
+        <h1 className="text-4xl font-black tracking-tight text-white mt-1">
           Settlements
         </h1>
       </div>
@@ -94,8 +94,8 @@ export default function SettlementsPage() {
               Active Room Debts
             </span>
 
-            <Card>
-              <CardContent className="p-0 divide-y divide-zinc-150">
+            <Card className="border-white/10 bg-[#0B1020] border border-white/10 text-white bg-/5 backdrop-blur-xl">
+              <CardContent className="p-0 divide-y divide-white/10">
                 {settlements.map((settlement: any, index: number) => (
                   <div
                     key={settlement._id || index}
@@ -105,7 +105,7 @@ export default function SettlementsPage() {
                       <span className="font-extrabold text-[#EF4444] text-sm">
                         {settlement.from?.name}
                       </span>
-                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest pl-0.5 pr-0.5">
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-0.5 pr-0.5">
                         owes
                       </span>
                       <span className="font-extrabold text-[#22C55E] text-sm">

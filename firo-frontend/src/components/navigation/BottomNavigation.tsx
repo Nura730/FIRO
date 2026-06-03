@@ -5,12 +5,13 @@ import {
   ArrowLeftRight,
   DoorOpen,
 } from "lucide-react";
+
 import { useRoom } from "../../providers/RoomProvider";
 import { useToast } from "../../providers/ToastProvider";
 
 const navItems = [
   {
-    label: "Dashboard",
+    label: "Home",
     path: "/dashboard",
     icon: LayoutDashboard,
     requiresRoom: true,
@@ -22,7 +23,7 @@ const navItems = [
     requiresRoom: true,
   },
   {
-    label: "Settlements",
+    label: "Settle",
     path: "/settlements",
     icon: ArrowLeftRight,
     requiresRoom: true,
@@ -40,40 +41,58 @@ export default function BottomNavigation() {
   const { room } = useRoom();
   const { showToast } = useToast();
 
-  const handleNavClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    item: (typeof navItems)[number]
+  ) => {
     if (item.requiresRoom && !room) {
       e.preventDefault();
-      showToast("Please select or create a room first!", "info");
+      showToast("Please select or create a room first!");
     }
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-40 rounded-t-[24px] shadow-[0_-8px_24px_rgba(15,23,42,0.04)] pb-safe">
-      <div className="flex justify-around items-center h-16 px-6 w-full">
+    <nav className="fixed bottom-4 left-1/2 z-50 w-[calc(100%-24px)] max-w-md -translate-x-1/2">
+      <div className="flex items-center justify-around rounded-[28px] border border-white/10 bg-[#0B1020]/90 px-2 py-3 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
         {navItems.map((item) => {
-          const isActive = location.pathname.startsWith(item.path);
           const Icon = item.icon;
-          const isDisabled = item.requiresRoom && !room;
+
+          const isActive =
+            location.pathname === item.path ||
+            location.pathname.startsWith(item.path + "/");
+
+          const isDisabled =
+            item.requiresRoom && !room;
 
           return (
             <Link
               key={item.path}
               to={isDisabled ? "#" : item.path}
               onClick={(e) => handleNavClick(e, item)}
-              className={`flex flex-col items-center justify-center gap-1.5 py-1 px-3 flex-1 transition-all active:scale-95 ${
-                isDisabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+              className={`relative flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-2 transition-all ${
+                isDisabled
+                  ? "cursor-not-allowed opacity-40"
+                  : "opacity-100"
               }`}
             >
+              {isActive && (
+                <div className="absolute inset-0 rounded-2xl bg-[#22C55E]/10" />
+              )}
+
               <Icon
                 size={20}
-                className={`transition-colors duration-200 ${
-                  isActive ? "text-[#22C55E]" : "text-[#64748B]"
+                className={`relative z-10 transition-colors ${
+                  isActive
+                    ? "text-[#22C55E]"
+                    : "text-zinc-500"
                 }`}
               />
 
               <span
-                className={`text-[10px] font-bold tracking-wide transition-colors duration-200 ${
-                  isActive ? "text-[#22C55E]" : "text-[#64748B]"
+                className={`relative z-10 text-[10px] font-bold tracking-wide ${
+                  isActive
+                    ? "text-[#22C55E]"
+                    : "text-zinc-500"
                 }`}
               >
                 {item.label}
