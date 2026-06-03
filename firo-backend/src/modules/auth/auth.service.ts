@@ -53,7 +53,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new Error("Invalid email or password");
+      throw new AppError("Invalid email or password", 401);
     }
 
     const token = jwt.sign(

@@ -53,4 +53,17 @@ router.get(
     RoomController.getRoomDetails
   )
 );
+
+router.delete(
+  "/:roomId/members/:userId",
+  authenticate,
+  asyncHandler(RoomController.removeMember)
+);
+
+router.post(
+  "/:roomId/transfer",
+  authenticate,
+  asyncHandler(RoomController.transferOwnership)
+);
+
 export default router;

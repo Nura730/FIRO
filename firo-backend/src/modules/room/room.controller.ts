@@ -123,4 +123,45 @@ static async getRoomDetails(
     )
   );
 }
+
+static async removeMember(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+  const { roomId, userId } = req.params as { roomId: string; userId: string };
+  await RoomService.removeMember(
+    req.user!.userId,
+    roomId,
+    userId
+  );
+
+  res.status(200).json(
+    new ApiResponse(
+      true,
+      "Room member removed successfully"
+    )
+  );
+}
+
+static async transferOwnership(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+  const { roomId } = req.params as { roomId: string };
+  const { newOwnerId } = req.body as { newOwnerId: string };
+
+  const room = await RoomService.transferOwnership(
+    roomId,
+    req.user!.userId,
+    newOwnerId
+  );
+
+  res.status(200).json(
+    new ApiResponse(
+      true,
+      "Ownership transferred successfully",
+      room
+    )
+  );
+}
 }

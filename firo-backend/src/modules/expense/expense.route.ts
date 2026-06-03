@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { ExpenseController } from "./expense.controller";
-import { createExpenseSchema } from "./expense.validation";
+import { createExpenseSchema, updateExpenseSchema } from "./expense.validation";
 
 import { authenticate } from "../../middlewares/auth.middleware";
 import { validate } from "../../middlewares/validate.middleware";
@@ -29,6 +29,7 @@ router.get(
 router.put(
   "/:expenseId",
   authenticate,
+  validate(updateExpenseSchema),
   asyncHandler(
     ExpenseController.updateExpense
   )

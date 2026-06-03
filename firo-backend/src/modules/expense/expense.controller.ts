@@ -15,17 +15,18 @@ export class ExpenseController {
       amount,
       category,
       splits,
+      isSettlement,
     } = req.body;
 
-    const expense =
-      await ExpenseService.createExpense(
-        req.user!.userId,
-        roomId,
-        title,
-        amount,
-        category,
-        splits
-      );
+    const expense = await ExpenseService.createExpense(
+      req.user!.userId,
+      roomId,
+      title,
+      amount,
+      category,
+      splits,
+      isSettlement
+    );
 
     res.status(201).json(
       new ApiResponse(
@@ -40,10 +41,11 @@ export class ExpenseController {
     req: AuthRequest,
     res: Response
   ): Promise<void> {
-    const expenses =
-      await ExpenseService.getRoomExpenses(
-        req.params.roomId as string
-      );
+    const category = req.query.category as string | undefined;
+    const expenses = await ExpenseService.getRoomExpenses(
+      req.params.roomId as string,
+      category
+    );
 
     res.status(200).json(
       new ApiResponse(
@@ -54,44 +56,44 @@ export class ExpenseController {
     );
   }
 
-
-
   static async updateExpense(
-  req: AuthRequest,
-  res: Response
-): Promise<void> {
-  const expense =
-    await ExpenseService.updateExpense(
+    req: AuthRequest,
+    res: Response
+  ): Promise<void> {
+    const { title, amount, category, splits, isSettlement } = req.body;
+    const expense = await ExpenseService.updateExpense(
       req.params.expenseId as string,
       req.user!.userId,
-      req.body.title,
-      req.body.amount,
-      req.body.category
+      title,
+      amount,
+      category,
+      splits,
+      isSettlement
     );
 
-  res.status(200).json(
-    new ApiResponse(
-      true,
-      "Expense updated",
-      expense
-    )
-  );
-}
+    res.status(200).json(
+      new ApiResponse(
+        true,
+        "Expense updated",
+        expense
+      )
+    );
+  }
 
-static async deleteExpense(
-  req: AuthRequest,
-  res: Response
-): Promise<void> {
-  await ExpenseService.deleteExpense(
-    req.params.expenseId as string,
-    req.user!.userId
-  );
+  static async deleteExpense(
+    req: AuthRequest,
+    res: Response
+  ): Promise<void> {
+    await ExpenseService.deleteExpense(
+      req.params.expenseId as string,
+      req.user!.userId
+    );
 
-  res.status(200).json(
-    new ApiResponse(
-      true,
-      "Expense deleted"
-    )
-  );
-}
+    res.status(200).json(
+      new ApiResponse(
+        true,
+        "Expense deleted"
+      )
+    );
+  }
 }

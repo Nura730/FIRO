@@ -221,4 +221,39 @@ static async transferOwnership(
 
   return room;
 }
+
+static async removeMember(
+  userId: string,
+  roomId: string,
+  targetMemberId: string
+): Promise<void> {
+  const room = await Room.findById(roomId);
+  if (!room) {
+    throw new AppError("Room not found", 404);
+  }
+
+  if (room.ownerId.toString() !== userId) {
+    throw new AppError("Only room owner can remove members", 403);
+  }
+
+  if (targetMemberId === userId) {
+    throw new AppError(
+      "Owner cannot be removed. Transfer ownership or delete the room.",
+      400
+    );
+  }
+
+  const memberExists = room.members.some(
+    (m) => m.userId.toString() === targetMemberId
+  );
+  if (!memberExists) {
+    throw new AppError("Room member not found", 404);
+  }
+
+  room.members = room.members.filter(
+    (m) => m.userId.toString() !== targetMemberId
+  );
+
+  await room.save();
+}
 }

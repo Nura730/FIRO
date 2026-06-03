@@ -17,6 +17,7 @@ export interface IExpense extends Document {
   paidBy: Types.ObjectId;
   createdBy: Types.ObjectId;
   splits: IExpenseSplit[];
+  isSettlement: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,9 +64,10 @@ const expenseSchema = new Schema<IExpense>(
       enum: [
         "RENT",
         "FOOD",
-        "EB",
-        "WATER",
+        "UTILITIES",
         "INTERNET",
+        "TRANSPORT",
+        "SHOPPING",
         "OTHER",
       ],
       default: "OTHER",
@@ -84,11 +86,19 @@ const expenseSchema = new Schema<IExpense>(
     },
 
     splits: [splitSchema],
+
+    isSettlement: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+expenseSchema.index({ roomId: 1, createdAt: -1 });
+expenseSchema.index({ paidBy: 1 });
 
 export const Expense =
   mongoose.model<IExpense>(
