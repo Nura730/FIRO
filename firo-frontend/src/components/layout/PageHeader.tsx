@@ -12,16 +12,16 @@ export default function PageHeader({
   right,
 }: PageHeaderProps) {
   return (
-    <div className="flex items-start justify-between mb-6">
+    <div className="flex items-center justify-between mb-6 pt-4">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[#0F172A]">{title}</h1>
 
         {subtitle && (
-          <p className="text-slate-500 text-sm mt-1">{subtitle}</p>
+          <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wider mt-1">{subtitle}</p>
         )}
       </div>
 
-      {right && <div>{right}</div>}
+      {right && <div className="shrink-0">{right}</div>}
     </div>
   );
 }

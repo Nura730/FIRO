@@ -3,8 +3,8 @@ import BottomNav from "./BottomNav";
 
 export default function AppLayout() {
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden relative bg-slate-50">
-      <main className="flex-grow overflow-y-auto pb-20 no-scrollbar">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col w-full">
+      <main className="flex-1 pb-24 w-full max-w-xl mx-auto px-4 sm:px-6">
         <Outlet />
       </main>
 

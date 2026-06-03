@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Receipt, Search, Plus, Edit2, Trash2, Calendar, User } from "lucide-react";
+import { Receipt, Search, Plus, Edit2, Trash2, Calendar, User, ChevronDown, ChevronUp } from "lucide-react";
 
 import Card from "../../../components/ui/Card";
 import EmptyState from "../../../components/ui/EmptyState";
@@ -16,13 +16,13 @@ import { useAuth } from "../../../providers/AuthProvider";
 const CATEGORIES = ["ALL", "RENT", "FOOD", "UTILITIES", "INTERNET", "TRANSPORT", "SHOPPING", "OTHER"];
 
 const categoryColors: Record<string, string> = {
-  RENT: "bg-blue-50 text-blue-600 border border-blue-100",
-  FOOD: "bg-orange-50 text-orange-600 border border-orange-100",
-  UTILITIES: "bg-purple-50 text-purple-600 border border-purple-100",
-  INTERNET: "bg-indigo-50 text-indigo-600 border border-indigo-100",
-  TRANSPORT: "bg-cyan-50 text-cyan-600 border border-cyan-100",
-  SHOPPING: "bg-pink-50 text-pink-600 border border-pink-100",
-  OTHER: "bg-slate-50 text-slate-600 border border-slate-100",
+  RENT: "bg-blue-50 text-blue-600 border border-blue-100/60",
+  FOOD: "bg-orange-50 text-orange-600 border border-orange-100/60",
+  UTILITIES: "bg-purple-50 text-purple-600 border border-purple-100/60",
+  INTERNET: "bg-indigo-50 text-indigo-600 border border-indigo-100/60",
+  TRANSPORT: "bg-cyan-50 text-cyan-600 border border-cyan-100/60",
+  SHOPPING: "bg-pink-50 text-pink-600 border border-pink-100/60",
+  OTHER: "bg-slate-50 text-slate-600 border border-slate-100/60",
 };
 
 export default function ExpensesPage() {
@@ -42,7 +42,6 @@ export default function ExpensesPage() {
 
   const expenses = data?.data || [];
 
-  // Exclude settlements from standard expenses list so they don't clutter the page
   const nonSettlementExpenses = useMemo(() => {
     return expenses.filter((e: any) => !e.isSettlement);
   }, [expenses]);
@@ -86,48 +85,39 @@ export default function ExpensesPage() {
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto pb-24 relative min-h-[80vh]">
+    <div className="py-6 space-y-5 pb-24 relative min-h-[80vh]">
       <PageHeader 
         title="Expenses" 
         subtitle={room?.roomName} 
-        right={
-          <button
-            onClick={openAddModal}
-            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-sm hover:shadow"
-          >
-            <Plus size={16} />
-            Add Expense
-          </button>
-        }
       />
 
       {/* Search Input */}
-      <div className="relative mb-3">
+      <div className="relative">
         <Search
           size={18}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
         />
         <input
           type="text"
           placeholder="Search expenses..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm outline-none focus:border-green-500 transition-colors"
+          className="w-full rounded-xl border border-[#E2E8F0] bg-white pl-10 pr-4 py-2.5 text-sm outline-none focus:border-[#22C55E] transition-colors shadow-sm"
         />
       </div>
 
-      {/* Category Pills */}
-      <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 scroll-smooth">
+      {/* Category Pills (horizontal scroll) */}
+      <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4 scroll-smooth">
         {CATEGORIES.map((cat) => {
           const isSelected = selectedCategory === cat;
           return (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`text-xs font-semibold px-4 py-1.8 rounded-full border whitespace-nowrap transition-all ${
+              className={`text-xs font-bold px-4 py-2 rounded-full border whitespace-nowrap transition-all active:scale-95 ${
                 isSelected
-                  ? "bg-green-600 border-green-600 text-white shadow-sm"
-                  : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"
+                  ? "bg-[#22C55E] border-[#22C55E] text-white shadow-sm"
+                  : "bg-white border-[#E2E8F0] text-[#64748B] hover:border-slate-300"
               }`}
             >
               {cat}
@@ -138,7 +128,7 @@ export default function ExpensesPage() {
 
       {/* Loading Skeletons */}
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <CardSkeleton />
           <CardSkeleton />
           <CardSkeleton />
@@ -150,11 +140,11 @@ export default function ExpensesPage() {
           description={
             search || selectedCategory !== "ALL"
               ? "Try adjusting your search or filters"
-              : "Expenses added to this room will appear here"
+              : "Keep track of bills with your roommates here"
           }
         />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {filtered.map((expense: any, index: number) => {
             const isExpanded = expandedExpenseId === expense._id;
             const creatorId = expense.createdBy?._id || expense.createdBy;
@@ -177,20 +167,20 @@ export default function ExpensesPage() {
               >
                 <Card 
                   onClick={() => handleCardClick(expense._id)}
-                  className={`p-4 cursor-pointer hover:border-slate-300 transition-all select-none ${
-                    isExpanded ? "border-green-300 ring-2 ring-green-50" : ""
+                  className={`p-5 cursor-pointer bg-white border-[#E2E8F0]/80 shadow-[0_8px_30px_rgba(15,23,42,0.01)] transition-all rounded-[24px] ${
+                    isExpanded ? "border-[#22C55E] ring-2 ring-[#22C55E]/5" : "hover:border-slate-300"
                   }`}
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-slate-900 truncate text-base">
+                      <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
+                        <h3 className="font-bold text-slate-800 truncate text-base">
                           {expense.title}
                         </h3>
 
                         {expense.category && (
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 uppercase tracking-wider ${
+                            className={`text-[9px] font-extrabold px-2.5 py-0.5 rounded-full shrink-0 uppercase tracking-wider ${
                               categoryColors[expense.category] || categoryColors.OTHER
                             }`}
                           >
@@ -199,13 +189,13 @@ export default function ExpensesPage() {
                         )}
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#64748B] font-medium">
                         <span className="flex items-center gap-1">
                           <User size={12} className="text-slate-400" />
                           Paid by {expense.paidBy?.name || "Unknown"}
                         </span>
                         {dateStr && (
-                          <span className="flex items-center gap-1 font-mono text-[11px] text-slate-400">
+                          <span className="flex items-center gap-1 font-mono text-[10px] text-slate-400">
                             <Calendar size={12} className="text-slate-400" />
                             {dateStr}
                           </span>
@@ -213,9 +203,15 @@ export default function ExpensesPage() {
                       </div>
                     </div>
 
-                    <p className="font-extrabold text-slate-900 ml-3 text-lg whitespace-nowrap">
-                      ₹{expense.amount?.toLocaleString("en-IN")}
-                    </p>
+                    <div className="flex flex-col items-end gap-1 ml-3 shrink-0">
+                      <p className="font-black text-[#0F172A] text-lg font-mono">
+                        ₹{expense.amount?.toLocaleString("en-IN")}
+                      </p>
+                      <span className="text-[10px] text-slate-400 font-semibold flex items-center">
+                        {isExpanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+                        Details
+                      </span>
+                    </div>
                   </div>
 
                   {/* Splits Details & Actions when expanded */}
@@ -226,37 +222,37 @@ export default function ExpensesPage() {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.15 }}
-                        className="overflow-hidden mt-3 pt-3 border-t border-slate-100"
+                        className="overflow-hidden mt-4 pt-4 border-t border-slate-100"
                         onClick={(e) => e.stopPropagation()} // prevent double toggling
                       >
-                        <div className="space-y-1.5">
-                          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-extrabold text-[#64748B] uppercase tracking-wider mb-2">
                             Splits Breakdown
                           </p>
                           {expense.splits?.map((split: any, sIdx: number) => (
                             <div key={sIdx} className="flex justify-between text-xs text-slate-700 font-medium">
                               <span>{split.userId?.name || "Unknown"}</span>
-                              <span className="font-mono text-slate-500">₹{split.amount?.toLocaleString("en-IN")}</span>
+                              <span className="font-mono text-slate-500 font-bold">₹{split.amount?.toLocaleString("en-IN")}</span>
                             </div>
                           ))}
                         </div>
 
                         {/* Edit/Delete Actions */}
                         {canManage && (
-                          <div className="flex gap-2 justify-end mt-4 pt-3 border-t border-slate-50">
+                          <div className="flex gap-2 justify-end mt-5 pt-3 border-t border-slate-50">
                             <button
                               onClick={(e) => handleEditClick(e, expense)}
-                              className="flex items-center gap-1 text-slate-600 hover:text-green-600 hover:bg-green-50 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:border-green-200 transition-all"
+                              className="flex items-center gap-1.5 text-slate-600 hover:text-[#22C55E] hover:bg-green-50 text-xs font-bold px-3 py-2 rounded-xl border border-[#E2E8F0] hover:border-[#22C55E]/30 transition-all"
                             >
-                              <Edit2 size={13} />
+                              <Edit2 size={12} />
                               Edit
                             </button>
                             <button
                               onClick={() => handleDelete(expense._id)}
-                              className="flex items-center gap-1 text-slate-600 hover:text-red-600 hover:bg-red-50 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:border-red-200 transition-all"
+                              className="flex items-center gap-1.5 text-slate-600 hover:text-red-600 hover:bg-red-50 text-xs font-bold px-3 py-2 rounded-xl border border-[#E2E8F0] hover:border-red-200 transition-all"
                               disabled={deleteMutation.isPending}
                             >
-                              <Trash2 size={13} />
+                              <Trash2 size={12} />
                               Delete
                             </button>
                           </div>
@@ -270,6 +266,17 @@ export default function ExpensesPage() {
           })}
         </div>
       )}
+
+      {/* Floating Action Button (FAB) */}
+      <div className="fixed bottom-24 right-6 sm:right-[calc(50%-17rem)] z-40">
+        <button
+          onClick={openAddModal}
+          title="Add new expense"
+          className="w-14 h-14 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full flex items-center justify-center shadow-[0_8px_24px_rgba(34,197,94,0.3)] hover:shadow-[0_8px_30px_rgba(34,197,94,0.4)] active:scale-95 transition-all text-lg font-bold"
+        >
+          <Plus size={24} />
+        </button>
+      </div>
 
       {/* Expense Form Modal */}
       <ExpenseModal

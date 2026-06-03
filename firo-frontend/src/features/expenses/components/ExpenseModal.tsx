@@ -230,10 +230,10 @@ export default function ExpenseModal({
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="relative bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden max-h-[85vh] flex flex-col"
+          className="relative bg-white w-full max-w-md rounded-[20px] shadow-xl overflow-hidden max-h-[85vh] flex flex-col border border-[#E2E8F0]"
         >
           <div className="flex justify-between items-center px-5 py-4 border-b border-slate-100">
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-[#0F172A]">
               {expense ? "Edit Expense" : "Add Expense"}
             </h2>
             <button
@@ -326,16 +326,16 @@ export default function ExpenseModal({
 
             {/* Split Switcher */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-2">
                 Split Settings
               </label>
               <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl">
                 <button
                   type="button"
                   onClick={() => setSplitType("equal")}
-                  className={`py-2 text-xs font-semibold rounded-lg transition-colors ${
+                  className={`py-2 text-xs font-semibold rounded-xl transition-colors ${
                     splitType === "equal"
-                      ? "bg-white text-green-600 shadow-sm"
+                      ? "bg-white text-[#22C55E] shadow-sm"
                       : "text-slate-500 hover:text-slate-800"
                   }`}
                 >
@@ -508,7 +508,7 @@ export default function ExpenseModal({
               <button
                 type="submit"
                 disabled={!isFormValid || isPending}
-                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow"
+                className="flex items-center gap-2 bg-[#22C55E] hover:bg-[#16A34A] disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow"
               >
                 {isPending && <Loader2 size={16} className="animate-spin" />}
                 {expense ? "Save Changes" : "Add Expense"}

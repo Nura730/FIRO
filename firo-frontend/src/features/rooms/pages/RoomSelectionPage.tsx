@@ -85,67 +85,67 @@ export default function RoomSelectionPage() {
   const otherRooms = rooms.filter((r: any) => r._id !== roomId);
 
   return (
-    <div className="h-full overflow-y-auto bg-slate-50 p-4 pb-20 no-scrollbar">
+    <div className="min-h-screen bg-[#F8FAFC] px-4 py-8 pb-24 max-w-xl mx-auto w-full">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="max-w-lg mx-auto"
+        className="space-y-8"
       >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6">
+        {/* Header / Greeting */}
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">
-              Welcome, {currentUser?.name}
+            <h1 className="text-2xl font-bold tracking-tight text-[#0F172A]">
+              Hey, {currentUser?.name} 👋
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
-              Manage your shared expenses
+            <p className="text-[#64748B] text-sm font-medium mt-1">
+              Choose or manage your active room
             </p>
           </div>
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-red-500 transition-colors py-2"
+            className="flex items-center gap-1.5 text-xs font-bold text-[#64748B] hover:text-red-500 bg-white border border-[#E2E8F0] shadow-sm px-3.5 py-2.5 rounded-xl transition-all active:scale-95"
           >
-            <LogOut size={16} />
+            <LogOut size={14} />
             Logout
           </button>
         </div>
 
         {/* 1. Active Room Management Section */}
         {activeRoom && (
-          <div className="mb-8">
-            <h2 className="font-bold text-sm text-slate-400 uppercase tracking-wider mb-3">
+          <div className="space-y-3.5">
+            <h2 className="text-xs font-bold text-[#64748B] uppercase tracking-wider pl-1">
               Active Room Details
             </h2>
 
-            <Card className="p-5 border-green-200 bg-white">
-              <div className="flex justify-between items-start mb-4">
+            <Card className="p-6 bg-white border-[#E2E8F0]/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-[24px]">
+              <div className="flex justify-between items-start mb-5">
                 <div>
-                  <h3 className="font-bold text-xl text-slate-900">{activeRoom.name}</h3>
-                  <div className="flex items-center gap-1.5 mt-1.5 text-xs font-mono bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg w-fit">
-                    Code: <span className="font-bold">{activeRoom.inviteCode}</span>
+                  <h3 className="font-bold text-2xl text-[#0F172A] tracking-tight">{activeRoom.name}</h3>
+                  <div className="flex items-center gap-1.5 mt-2 text-xs font-mono font-bold bg-[#F1F5F9] text-[#475569] px-3 py-1.5 rounded-xl w-fit">
+                    Code: <span className="text-[#0F172A] font-extrabold">{activeRoom.inviteCode}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-50 text-green-700">
+                <div className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-[#22C55E]/10 text-[#22C55E]">
                   <Shield size={12} />
-                  Active Room
+                  Active
                 </div>
               </div>
 
               {/* Members List */}
-              <div className="space-y-3 pt-3 border-t border-slate-100">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <p className="text-xs font-bold text-[#64748B] uppercase tracking-wider">
                   Roommates ({activeMembers.length})
                 </p>
 
                 {loadingDetails ? (
                   <div className="space-y-2 animate-pulse">
-                    <div className="h-8 bg-slate-100 rounded-lg" />
-                    <div className="h-8 bg-slate-100 rounded-lg" />
+                    <div className="h-10 bg-slate-50 rounded-xl" />
+                    <div className="h-10 bg-slate-50 rounded-xl" />
                   </div>
                 ) : (
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     {activeMembers.map((m: any, idx: number) => {
                       const memberId = m.userId?._id || m.userId;
                       const memberName = m.userId?.name || "Unknown";
@@ -158,22 +158,22 @@ export default function RoomSelectionPage() {
                       return (
                         <div
                           key={idx}
-                          className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-xl transition-colors"
+                          className="flex items-center justify-between p-3.5 hover:bg-[#F8FAFC] rounded-[16px] transition-colors border border-transparent hover:border-slate-100"
                         >
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-slate-800 truncate">
+                            <p className="text-sm font-semibold text-[#0F172A] truncate">
                               {memberName} {isMe && "(You)"}
                             </p>
-                            <p className="text-xs text-slate-400 truncate">{memberEmail}</p>
+                            <p className="text-xs text-[#64748B] truncate">{memberEmail}</p>
                           </div>
 
                           <div className="flex items-center gap-2 shrink-0">
                             {/* Role badge */}
                             <span
-                              className={`text-[9px] font-extrabold tracking-wider px-2 py-0.5 rounded uppercase ${
+                              className={`text-[9px] font-extrabold tracking-wider px-2 py-1 rounded-lg uppercase ${
                                 role === "OWNER"
                                   ? "bg-amber-50 text-amber-600 border border-amber-200"
-                                  : "bg-slate-100 text-slate-500"
+                                  : "bg-[#F1F5F9] text-[#64748B]"
                               }`}
                             >
                               {role}
@@ -181,22 +181,22 @@ export default function RoomSelectionPage() {
 
                             {/* Owner management buttons */}
                             {showActions && (
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 ml-1">
                                 <button
                                   onClick={() => handleTransferOwnership(memberId, memberName)}
                                   title="Transfer ownership"
-                                  className="p-1 hover:bg-amber-50 hover:text-amber-600 rounded text-slate-400 transition-colors"
+                                  className="p-1.5 hover:bg-amber-50 hover:text-amber-600 rounded-lg text-slate-400 transition-colors"
                                   disabled={transferOwnershipMutation.isPending}
                                 >
-                                  <RefreshCw size={13} />
+                                  <RefreshCw size={14} />
                                 </button>
                                 <button
                                   onClick={() => handleKickMember(memberId, memberName)}
                                   title="Kick member"
-                                  className="p-1 hover:bg-red-50 hover:text-red-500 rounded text-slate-400 transition-colors"
+                                  className="p-1.5 hover:bg-red-50 hover:text-red-500 rounded-lg text-slate-400 transition-colors"
                                   disabled={removeMemberMutation.isPending}
                                 >
-                                  <UserMinus size={13} />
+                                  <UserMinus size={14} />
                                 </button>
                               </div>
                             )}
@@ -213,7 +213,7 @@ export default function RoomSelectionPage() {
                 {isOwnerOfActiveRoom ? (
                   <button
                     onClick={handleDeleteRoom}
-                    className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 px-3 py-2 hover:bg-red-50 rounded-xl transition-all"
+                    className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 px-4 py-2 hover:bg-red-50 rounded-xl transition-all"
                     disabled={deleteRoomMutation.isPending}
                   >
                     <Trash2 size={14} />
@@ -222,7 +222,7 @@ export default function RoomSelectionPage() {
                 ) : (
                   <button
                     onClick={handleLeaveRoom}
-                    className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 px-3 py-2 hover:bg-red-50 rounded-xl transition-all"
+                    className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 px-4 py-2 hover:bg-red-50 rounded-xl transition-all"
                     disabled={leaveRoomMutation.isPending}
                   >
                     <LogOut size={14} />
@@ -235,9 +235,9 @@ export default function RoomSelectionPage() {
         )}
 
         {/* 2. Room Switch / Selection list */}
-        <div>
-          <h2 className="font-bold text-sm text-slate-400 uppercase tracking-wider mb-3">
-            {activeRoom ? "Switch Rooms" : "Select Room"}
+        <div className="space-y-3.5">
+          <h2 className="text-xs font-bold text-[#64748B] uppercase tracking-wider pl-1">
+            {activeRoom ? "Switch Rooms" : "Your Rooms"}
           </h2>
 
           {loadingMyRooms ? (
@@ -246,11 +246,11 @@ export default function RoomSelectionPage() {
               <CardSkeleton />
             </div>
           ) : otherRooms.length === 0 && rooms.length > 0 ? (
-            <div className="text-xs font-medium text-slate-400 p-4 border border-dashed border-slate-200 rounded-2xl text-center bg-white mb-4">
-              No other rooms available
+            <div className="text-xs font-medium text-[#64748B] p-5 border border-dashed border-[#E2E8F0] rounded-[24px] text-center bg-white">
+              No other rooms joined.
             </div>
           ) : rooms.length === 0 ? (
-            <div className="mb-4">
+            <div>
               <EmptyState
                 icon={Users}
                 title="No rooms found"
@@ -258,7 +258,7 @@ export default function RoomSelectionPage() {
               />
             </div>
           ) : (
-            <div className="space-y-3 mb-4">
+            <div className="grid gap-3.5 grid-cols-1">
               {otherRooms.map((roomItem: any, index: number) => (
                 <motion.div
                   key={roomItem._id}
@@ -268,18 +268,24 @@ export default function RoomSelectionPage() {
                 >
                   <Card
                     onClick={() => handleSelectRoom(roomItem)}
-                    className="p-4 cursor-pointer hover:border-green-300 transition-all bg-white"
+                    className="p-5 cursor-pointer hover:border-[#22C55E]/40 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all bg-white rounded-[24px]"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h4 className="font-bold text-slate-800">{roomItem.name}</h4>
-                        <p className="text-[10px] font-mono text-slate-400 mt-1">
-                          Code: {roomItem.inviteCode}
-                        </p>
+                        <h4 className="font-bold text-base text-[#0F172A] tracking-tight">{roomItem.name}</h4>
+                        <div className="flex items-center gap-3 mt-1.5">
+                          <p className="text-[10px] font-mono font-bold bg-[#F1F5F9] text-[#64748B] px-2 py-0.5 rounded-lg">
+                            Code: {roomItem.inviteCode}
+                          </p>
+                          <p className="text-xs text-[#64748B] font-semibold flex items-center gap-1">
+                            <Users size={12} className="text-[#64748B]" />
+                            {roomItem.members?.length || 0} roommates
+                          </p>
+                        </div>
                       </div>
 
-                      <span className="flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-lg">
-                        <ArrowLeftRight size={11} />
+                      <span className="flex items-center gap-1 text-xs font-bold text-[#22C55E] bg-[#22C55E]/10 px-3.5 py-2.5 rounded-xl active:scale-95 transition-all">
+                        <ArrowLeftRight size={12} />
                         Switch
                       </span>
                     </div>
@@ -290,8 +296,11 @@ export default function RoomSelectionPage() {
           )}
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            <Button onClick={() => navigate("/rooms/create")} className="py-2.5">
+          <div className="grid grid-cols-2 gap-3.5 pt-2">
+            <Button
+              onClick={() => navigate("/rooms/create")}
+              className="py-3 rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold transition-all"
+            >
               <span className="flex items-center justify-center gap-1.5 text-sm">
                 <Plus size={16} />
                 Create Room
@@ -300,11 +309,11 @@ export default function RoomSelectionPage() {
 
             <Button
               onClick={() => navigate("/rooms/join")}
-              className="bg-slate-700 py-2.5"
+              className="bg-[#0F172A] hover:bg-[#1E293B] text-white font-bold py-3 rounded-xl transition-all"
             >
               <span className="flex items-center justify-center gap-1.5 text-sm">
                 <KeyRound size={16} />
-                Join Code
+                Join Room
               </span>
             </Button>
           </div>

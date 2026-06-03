@@ -13,52 +13,54 @@ export default function JoinRoomPage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!inviteCode.trim()) return;
-
     joinMutation.mutate(inviteCode.trim().toUpperCase());
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-slate-50 p-4">
+    <div className="min-h-screen bg-[#F8FAFC] p-6 max-w-md mx-auto w-full flex flex-col justify-center">
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="max-w-lg mx-auto"
+        className="w-full space-y-6"
       >
         <Link
           to="/rooms"
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-6"
+          className="inline-flex items-center gap-1 text-sm font-semibold text-[#64748B] hover:text-[#0F172A] transition-colors mb-2"
         >
           <ArrowLeft size={16} />
           Back to rooms
         </Link>
 
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <div className="mb-6">
-            <h1 className="text-xl font-bold text-slate-900">Join a Room</h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Enter the invite code shared by your roommate
+        <div className="bg-white rounded-[24px] border border-[#E2E8F0]/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] p-6 sm:p-8 space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold text-[#0F172A]">Join Room</h1>
+            <p className="text-sm text-[#64748B] mt-1.5 font-medium">
+              Enter the invite code shared by your roommate.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <Input
               label="Invite Code"
               placeholder="e.g. K3LIF1GQ"
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value)}
-              className="uppercase tracking-widest text-center text-lg"
+              className="uppercase tracking-widest text-center text-lg font-bold rounded-xl border-[#E2E8F0] focus:border-[#22C55E]"
             />
 
             {joinMutation.isError && (
-              <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+              <div className="rounded-xl bg-red-50 border border-red-100 p-3.5 text-xs font-semibold text-red-600">
                 Invalid invite code. Please check and try again.
               </div>
             )}
 
-            <Button type="submit" loading={joinMutation.isPending}>
+            <Button
+              type="submit"
+              loading={joinMutation.isPending}
+              className="rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold h-12 transition-all"
+            >
               Join Room
             </Button>
           </form>
