@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 
+import { useQueryClient } from "@tanstack/react-query";
 import type { User } from "../types/auth";
 
 interface AuthContextType {
@@ -21,21 +22,18 @@ export function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("firo_token");
+  const queryClient = useQueryClient();
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem("firo_token");
+  });
+  const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem("firo_user");
-
-    if (storedToken) {
-      setToken(storedToken);
+    try {
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
     }
-
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  });
 
   const login = (token: string, user: User) => {
     localStorage.setItem("firo_token", token);
@@ -49,10 +47,23 @@ export function AuthProvider({
     localStorage.removeItem("firo_token");
     localStorage.removeItem("firo_user");
     localStorage.removeItem("firo_room");
+    localStorage.removeItem("firo_active_room_id");
 
     setToken(null);
     setUser(null);
+    queryClient.clear();
   };
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      logout();
+    };
+
+    window.addEventListener("firo_unauthorized", handleUnauthorized);
+    return () => {
+      window.removeEventListener("firo_unauthorized", handleUnauthorized);
+    };
+  }, []);
 
   return (
     <AuthContext.Provider

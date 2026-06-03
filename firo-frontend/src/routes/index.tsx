@@ -28,32 +28,23 @@ export default function AppRoutes() {
     );
   }
 
-  // Logged in but no room selected → room routes
-  if (!room) {
-    return (
-      <Routes>
-        <Route path="/rooms" element={<RoomSelectionPage />} />
-        <Route path="/rooms/create" element={<CreateRoomPage />} />
-        <Route path="/rooms/join" element={<JoinRoomPage />} />
-        <Route path="*" element={<Navigate to="/rooms" replace />} />
-      </Routes>
-    );
-  }
-
-  // Logged in with room → main app
+  // Logged in with token → wrap layout & guard room details inside layout
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/expenses" element={<ExpensesPage />} />
         <Route path="/settlements" element={<SettlementsPage />} />
+        <Route path="/rooms" element={<RoomSelectionPage />} />
       </Route>
 
-      <Route path="/rooms" element={<RoomSelectionPage />} />
       <Route path="/rooms/create" element={<CreateRoomPage />} />
       <Route path="/rooms/join" element={<JoinRoomPage />} />
 
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route
+        path="*"
+        element={<Navigate to={room ? "/dashboard" : "/rooms"} replace />}
+      />
     </Routes>
   );
 }

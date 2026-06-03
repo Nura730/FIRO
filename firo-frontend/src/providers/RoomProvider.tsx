@@ -4,6 +4,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useAuth } from "./AuthProvider";
+import { getRoomMembers } from "../api/room.api";
 
 interface RoomData {
   roomId: string;
@@ -25,17 +27,54 @@ export function RoomProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [room, setRoom] =
-    useState<RoomData | null>(null);
+  const { token } = useAuth();
+  const [room, setRoom] = useState<RoomData | null>(() => {
+    const storedRoom = localStorage.getItem("firo_room");
+    const activeRoomId = localStorage.getItem("firo_active_room_id");
+    
+    if (!activeRoomId) return null;
+    
+    try {
+      if (storedRoom) {
+        const parsed = JSON.parse(storedRoom);
+        if (parsed.roomId === activeRoomId) return parsed;
+      }
+      // Fallback if firo_room is missing but id is present
+      return { roomId: activeRoomId, roomName: "", inviteCode: "" };
+    } catch {
+      return null;
+    }
+  });
 
   useEffect(() => {
-    const storedRoom =
-      localStorage.getItem("firo_room");
-
-    if (storedRoom) {
-      setRoom(JSON.parse(storedRoom));
+    if (!token) {
+      setRoom(null);
+      return;
     }
-  }, []);
+
+    if (room?.roomId) {
+      // Verify room exists on backend
+      getRoomMembers(room.roomId)
+        .then((res) => {
+          if (res && res.data) {
+            const updatedData = {
+              roomId: res.data._id,
+              roomName: res.data.name,
+              inviteCode: res.data.inviteCode,
+            };
+            // Update state with verified complete info
+            setRoom(updatedData);
+            localStorage.setItem("firo_room", JSON.stringify(updatedData));
+            localStorage.setItem("firo_active_room_id", res.data._id);
+          } else {
+            clearRoom();
+          }
+        })
+        .catch(() => {
+          clearRoom();
+        });
+    }
+  }, [token]);
 
   const selectRoom = (
     roomData: RoomData
@@ -44,14 +83,17 @@ export function RoomProvider({
       "firo_room",
       JSON.stringify(roomData)
     );
+    localStorage.setItem(
+      "firo_active_room_id",
+      roomData.roomId
+    );
 
     setRoom(roomData);
   };
 
   const clearRoom = () => {
-    localStorage.removeItem(
-      "firo_room"
-    );
+    localStorage.removeItem("firo_room");
+    localStorage.removeItem("firo_active_room_id");
 
     setRoom(null);
   };

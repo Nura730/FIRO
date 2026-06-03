@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, CheckCircle, Wallet, X, Check, Loader2 } from "lucide-react";
+import { CheckCircle, X, Check } from "lucide-react";
 
-import Card from "../../../components/ui/Card";
+import Button from "../../../components/ui/Button";
+import Card, { CardContent } from "../../../components/ui/Card";
 import EmptyState from "../../../components/ui/EmptyState";
-import { CardSkeleton } from "../../../components/ui/Skeleton";
-import PageHeader from "../../../components/layout/PageHeader";
+import { Skeleton } from "../../../components/ui/Skeleton";
 
 import { useRoom } from "../../../providers/RoomProvider";
 import { useSettlements } from "../hooks/useSettlements";
 import { useCreateExpense } from "../../expenses/hooks/useCreateExpense";
+import { useToast } from "../../../providers/ToastProvider";
 
 export default function SettlementsPage() {
   const { room } = useRoom();
+  const { showToast } = useToast();
   const roomId = room?.roomId || "";
   const { data, isLoading } = useSettlements(roomId);
   const createMutation = useCreateExpense();
@@ -51,119 +53,120 @@ export default function SettlementsPage() {
     createMutation.mutate(payload, {
       onSuccess: () => {
         setSelectedSettlement(null);
+        showToast("Settlement payment recorded successfully", "success");
+      },
+      onError: () => {
+        showToast("Failed to record settlement", "error");
       },
     });
   };
 
   return (
-    <div className="py-6 space-y-5 pb-24 max-w-xl mx-auto w-full">
-      <PageHeader title="Settlements" subtitle={room?.roomName} />
+    <div className="w-full py-8 px-2 space-y-8">
+      {/* Header Context */}
+      <div className="pl-0.5">
+        <span className="text-[10px] font-bold tracking-widest text-[#22C55E] uppercase pl-0.5">
+          {room?.roomName}
+        </span>
+        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 mt-1">
+          Settlements
+        </h1>
+      </div>
 
-      {/* Loading Skeletons */}
+      {/* Loading states */}
       {isLoading ? (
-        <div className="space-y-4">
-          <CardSkeleton />
-          <CardSkeleton />
+        <div className="space-y-3">
+          {[1, 2].map((i) => (
+            <Skeleton key={i} className="h-16 w-full rounded-xl" />
+          ))}
         </div>
       ) : settlements.length === 0 ? (
         <EmptyState
           icon={CheckCircle}
-          title="All settled up!"
-          description="No pending debts in this room."
+          title="All settled up"
+          description="Awesome! There are no outstanding roommate debts inside this room."
         />
       ) : (
-        <div className="space-y-5">
-          {/* Balance Overview Panel */}
-          {balances.length > 0 && (
-            <Card className="p-5 bg-white border-[#E2E8F0]/80 shadow-[0_8px_30px_rgba(15,23,42,0.01)] rounded-[24px]">
-              <h3 className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-3 pl-1">
-                Balances Summary
-              </h3>
-              <div className="space-y-3">
-                {balances.map((b: any, bIdx: number) => {
-                  const isOwed = b.balance > 0;
-                  const isDebtor = b.balance < 0;
-                  
-                  return (
-                    <div key={bIdx} className="flex justify-between items-center text-sm font-semibold">
-                      <span className="text-[#0F172A]">{b.name}</span>
-                      <span className={`font-bold font-mono ${
-                        isOwed ? "text-[#22C55E]" : isDebtor ? "text-[#EF4444]" : "text-slate-400"
-                      }`}>
-                        {isOwed ? `+₹${b.balance.toLocaleString("en-IN")}` : isDebtor ? `-₹${Math.abs(b.balance).toLocaleString("en-IN")}` : "Settled"}
+        <div className="space-y-8">
+          {/* 1. Debt relationships first focus */}
+          <div className="space-y-3.5">
+            <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase pl-0.5">
+              Active Room Debts
+            </span>
+
+            <Card>
+              <CardContent className="p-0 divide-y divide-zinc-150">
+                {settlements.map((settlement: any, index: number) => (
+                  <div
+                    key={settlement._id || index}
+                    className="flex items-center justify-between p-5"
+                  >
+                    <div className="min-w-0 flex items-center gap-1.5 flex-wrap">
+                      <span className="font-extrabold text-[#EF4444] text-sm">
+                        {settlement.from?.name}
+                      </span>
+                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest pl-0.5 pr-0.5">
+                        owes
+                      </span>
+                      <span className="font-extrabold text-[#22C55E] text-sm">
+                        {settlement.to?.name}
                       </span>
                     </div>
-                  );
-                })}
-              </div>
-            </Card>
-          )}
 
-          {/* Recommendations List */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold text-[#64748B] uppercase tracking-wider pl-1">
-              Active settlement paths
-            </h3>
-            
-            {settlements.map((settlement: any, index: number) => (
-              <motion.div
-                key={settlement._id || index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.04 }}
-              >
-                <Card className="p-5 bg-white border-[#E2E8F0]/80 shadow-[0_8px_30px_rgba(15,23,42,0.01)] rounded-[24px] flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-[#EF4444]/10 flex items-center justify-center shrink-0 border border-[#EF4444]/15">
-                        <span className="text-sm font-extrabold text-[#EF4444]">
-                          {settlement.from?.name?.[0]?.toUpperCase() || "?"}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-sm font-bold text-[#0F172A] truncate">
-                          {settlement.from?.name || "Unknown"}
-                        </span>
-                        
-                        <ArrowRight size={14} className="text-[#64748B] shrink-0" />
-                        
-                        <span className="text-sm font-bold text-[#0F172A] truncate">
-                          {settlement.to?.name || "Unknown"}
-                        </span>
-                      </div>
-
-                      <div className="w-9 h-9 rounded-xl bg-[#22C55E]/10 flex items-center justify-center shrink-0 border border-[#22C55E]/15">
-                        <span className="text-sm font-extrabold text-[#22C55E]">
-                          {settlement.to?.name?.[0]?.toUpperCase() || "?"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="text-right ml-3 shrink-0">
-                      <p className="font-extrabold text-[#0F172A] font-mono text-base">
+                    <div className="flex items-center gap-3 shrink-0 ml-3">
+                      <p className="font-extrabold text-zinc-900 font-mono text-base">
                         ₹{settlement.amount?.toLocaleString("en-IN")}
                       </p>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSettleClick(settlement)}
+                        className="font-bold h-9"
+                      >
+                        Settle
+                      </Button>
                     </div>
                   </div>
-
-                  <div className="flex justify-end pt-1">
-                    <button
-                      onClick={() => handleSettleClick(settlement)}
-                      className="flex items-center gap-1.5 bg-[#22C55E]/10 hover:bg-[#22C55E]/20 text-[#22C55E] text-xs font-bold px-4 py-2.5 rounded-xl transition-all active:scale-95"
-                    >
-                      <Wallet size={13} />
-                      Record Settlement
-                    </button>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+                ))}
+              </CardContent>
+            </Card>
           </div>
+
+          {/* 2. Roommates balances summary */}
+          {balances.length > 0 && (
+            <div className="space-y-3.5">
+              <span className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase pl-0.5">
+                Balances Summary
+              </span>
+
+              <Card>
+                <CardContent className="p-0 divide-y divide-zinc-150">
+                  {balances.map((b: any, bIdx: number) => {
+                    const isOwed = b.balance > 0;
+                    const isDebtor = b.balance < 0;
+
+                    return (
+                      <div key={bIdx} className="flex justify-between items-center p-5">
+                        <span className="text-sm font-bold text-zinc-800">{b.name}</span>
+                        <span
+                          className={`font-bold font-mono text-sm ${
+                            isOwed ? "text-[#22C55E]" : isDebtor ? "text-[#EF4444]" : "text-zinc-450"
+                          }`}
+                        >
+                          {isOwed ? `+₹${b.balance.toLocaleString("en-IN")}` : isDebtor ? `-₹${Math.abs(b.balance).toLocaleString("en-IN")}` : "Settled"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Settle Up payment dialog (Modal 20px rounded) */}
+      {/* Record payment Dialog */}
       <AnimatePresence>
         {selectedSettlement && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -179,34 +182,34 @@ export default function SettlementsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative bg-white w-full max-w-sm rounded-[20px] shadow-xl p-6 overflow-hidden border border-[#E2E8F0]"
+              className="relative bg-white w-full max-w-sm rounded-[20px] shadow-xl p-6 overflow-hidden border border-zinc-150"
             >
-              <div className="flex justify-between items-center mb-4 pb-2.5 border-b border-slate-100">
-                <h3 className="text-base font-bold text-[#0F172A]">
+              <div className="flex justify-between items-center mb-4 pb-2.5 border-b border-zinc-100">
+                <h3 className="text-base font-extrabold text-[#0F172A]">
                   Record Settlement
                 </h3>
                 <button
                   onClick={() => setSelectedSettlement(null)}
-                  className="text-[#64748B] hover:text-[#0F172A] p-1 rounded-lg hover:bg-slate-100 transition-all"
+                  className="text-[#64748B] hover:text-[#0F172A] p-1 rounded-lg hover:bg-zinc-50 transition-all"
                 >
                   <X size={18} />
                 </button>
               </div>
 
               <form onSubmit={handleSettleSubmit} className="space-y-4">
-                <div className="text-sm text-[#64748B] font-medium leading-relaxed">
+                <div className="text-sm text-zinc-650 font-semibold leading-relaxed">
                   Record a payment from <strong className="text-[#0F172A]">{selectedSettlement.from.name}</strong> to <strong className="text-[#0F172A]">{selectedSettlement.to.name}</strong>.
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5 pl-0.5">
                     Amount Paid (₹)
                   </label>
                   <input
                     type="number"
                     value={settleAmount}
                     onChange={(e) => setSettleAmount(e.target.value === "" ? "" : Number(e.target.value))}
-                    className="w-full text-sm rounded-xl border border-[#E2E8F0] bg-white px-3.5 py-2.5 outline-none focus:border-[#22C55E] transition-colors"
+                    className="w-full text-sm font-semibold rounded-lg border border-zinc-200 bg-white px-4 py-2.5 outline-none focus:border-[#22C55E] focus:ring-1 focus:ring-zinc-950 transition-all"
                     required
                     min="1"
                     step="any"
@@ -214,26 +217,24 @@ export default function SettlementsPage() {
                 </div>
 
                 <div className="flex justify-end gap-3 pt-3">
-                  <button
+                  <Button
+                    variant="ghost"
                     type="button"
                     onClick={() => setSelectedSettlement(null)}
-                    className="text-xs font-bold text-[#64748B] hover:text-[#0F172A] transition-colors px-2 py-1"
                     disabled={createMutation.isPending}
+                    className="text-xs font-bold"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
                     disabled={!settleAmount || createMutation.isPending}
-                    className="flex items-center gap-1.5 bg-[#22C55E] hover:bg-[#16A34A] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm"
+                    loading={createMutation.isPending}
+                    className="font-bold flex items-center gap-1"
                   >
-                    {createMutation.isPending ? (
-                      <Loader2 size={13} className="animate-spin" />
-                    ) : (
-                      <Check size={13} />
-                    )}
+                    <Check size={13} />
                     Record Payment
-                  </button>
+                  </Button>
                 </div>
               </form>
             </motion.div>

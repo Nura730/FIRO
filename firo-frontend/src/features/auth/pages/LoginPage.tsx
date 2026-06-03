@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Receipt } from "lucide-react";
+import { Receipt, ArrowRight } from "lucide-react";
 
 import Input from "../../../components/ui/Input";
 import Button from "../../../components/ui/Button";
@@ -19,86 +19,121 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-between px-6 py-12 max-w-md mx-auto w-full">
-      {/* Top Branding / Onboarding Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="pt-12 text-center"
-      >
-        <div className="mx-auto w-14 h-14 bg-[#22C55E]/10 flex items-center justify-center rounded-2xl mb-5 text-[#22C55E]">
-          <Receipt size={28} />
-        </div>
-        <h1 className="text-[32px] font-black tracking-tight text-[#0F172A]">
-          FIRO
-        </h1>
-        <p className="mt-2.5 text-base text-[#64748B] font-medium max-w-xs mx-auto">
-          Manage roommate expenses easily. No spreadsheet required.
-        </p>
-      </motion.div>
+    <div className="relative min-h-screen overflow-hidden bg-[#050816]">
+      {/* Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-[-200px] left-[-120px] h-[420px] w-[420px] rounded-full bg-[#22C55E]/20 blur-[140px]" />
 
-      {/* Main card */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="w-full"
-      >
-        <div className="bg-white rounded-[24px] border border-[#E2E8F0]/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] p-6 sm:p-8 space-y-6">
-          <h2 className="text-xl font-bold text-[#0F172A]">Welcome Back</h2>
+        <div className="absolute bottom-[-150px] right-[-120px] h-[350px] w-[350px] rounded-full bg-emerald-400/10 blur-[140px]" />
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Email Address"
-              type="email"
-              placeholder="name@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-xl border-[#E2E8F0] focus:border-[#22C55E]"
-            />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      </div>
 
-            <Input
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-xl border-[#E2E8F0] focus:border-[#22C55E]"
-            />
+      <div className="relative z-10 flex min-h-screen items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, y: -25 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 text-center"
+          >
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-[#22C55E] shadow-[0_0_50px_rgba(34,197,94,0.4)]">
+              <Receipt size={30} className="text-white" />
+            </div>
 
-            {loginMutation.isError && (
-              <div className="rounded-xl bg-red-50 border border-red-100 p-3.5 text-xs font-semibold text-red-600">
-                Invalid email or password. Please try again.
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              loading={loginMutation.isPending}
-              className="rounded-xl bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold h-12 mt-2 transition-all"
-            >
-              Sign In
-            </Button>
-          </form>
-
-          <div className="pt-2 text-center">
-            <p className="text-sm text-[#64748B]">
-              New to FIRO?{" "}
-              <Link
-                to="/register"
-                className="text-[#22C55E] font-bold hover:underline"
-              >
-                Create an account
-              </Link>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-[#22C55E]">
+              FIRO
             </p>
-          </div>
-        </div>
-      </motion.div>
 
-      {/* Footer Branding */}
-      <div className="text-center text-xs font-semibold text-[#64748B]/50 tracking-wider">
-        SECURE FINANCE APP
+            <h1 className="text-4xl font-black text-white">
+              Split Smarter.
+            </h1>
+
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              Manage roommate expenses, balances and settlements
+              without spreadsheets.
+            </p>
+          </motion.div>
+
+          {/* Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+          >
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-white">
+                Welcome Back 👋
+              </h2>
+
+              <p className="mt-1 text-sm text-zinc-400">
+                Sign in to continue managing your shared expenses.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <Input
+                label="Email"
+                type="email"
+                placeholder="name@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-13 border-white/10 bg-white/5 text-white placeholder:text-zinc-500 focus-visible:border-[#22C55E] focus-visible:ring-[#22C55E]"
+              />
+
+              <Input
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="h-13 border-white/10 bg-white/5 text-white placeholder:text-zinc-500 focus-visible:border-[#22C55E] focus-visible:ring-[#22C55E]"
+              />
+
+              {loginMutation.isError && (
+                <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-300">
+                  Invalid email or password.
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                loading={loginMutation.isPending}
+                className="h-14 w-full rounded-2xl bg-[#22C55E] text-base font-bold hover:bg-[#16A34A]"
+              >
+                <span>Sign In</span>
+                <ArrowRight size={18} />
+              </Button>
+            </form>
+
+            <div className="mt-6 border-t border-white/10 pt-5 text-center">
+              <p className="text-sm text-zinc-400">
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="font-semibold text-[#22C55E] transition hover:text-[#4ADE80]"
+                >
+                  Create Account
+                </Link>
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Footer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6 text-center"
+          >
+            <p className="text-xs uppercase tracking-[0.25em] text-zinc-600">
+              FIRO • Room Expense Manager
+            </p>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
