@@ -13,25 +13,42 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#050816] text-white">
-      {/* Background Effects */}
+    <div className="relative min-h-screen bg-[#04010A] text-slate-100 overflow-hidden">
+      {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-200px] left-[-100px] h-[400px] w-[400px] rounded-full bg-[#22C55E]/10 blur-[140px]" />
+        {/* Purple Glow */}
+        <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-violet-600/10 blur-[140px]" />
 
-        <div className="absolute bottom-[-150px] right-[-100px] h-[300px] w-[300px] rounded-full bg-emerald-400/10 blur-[140px]" />
+        {/* Emerald Glow */}
+        <div className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-emerald-500/10 blur-[140px]" />
 
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        {/* Noise Overlay */}
+        <div className="absolute inset-0 noise-overlay opacity-40" />
       </div>
 
-      <motion.main
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="relative z-10 flex-1 pb-28 px-4 pt-4"
-      >
-        <Outlet />
-      </motion.main>
+      {/* Main Content */}
+      <div className="relative z-10">
+        <motion.main
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+          className="
+            mx-auto
+            min-h-screen
+            w-full
+            max-w-5xl
+            px-4
+            pt-6
+            pb-28
+            sm:px-6
+            lg:px-8
+          "
+        >
+          <Outlet />
+        </motion.main>
 
-      <BottomNavigation />
+        <BottomNavigation />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 
 import Input from "../../../components/ui/Input";
 import Button from "../../../components/ui/Button";
@@ -18,61 +18,80 @@ export default function CreateRoomPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#050816] p-6 flex flex-col justify-center">
-      <div className="absolute inset-0">
-        <div className="absolute top-[-200px] left-[-120px] h-[420px] w-[420px] rounded-full bg-[#22C55E]/20 blur-[140px]" />
-
-        <div className="absolute bottom-[-150px] right-[-120px] h-[350px] w-[350px] rounded-full bg-emerald-400/10 blur-[140px]" />
-
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+    <div className="relative min-h-screen w-full bg-[#04010a] text-slate-100 flex items-center justify-center sm:py-8 overflow-hidden noise-overlay">
+      {/* 1. Animated Ambient Lights in the background */}
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
+        <div className="absolute top-[-5%] left-[-10%] h-[400px] w-[400px] rounded-full bg-indigo-500/20 blur-[100px] animate-float-slow" />
+        <div className="absolute top-[35%] left-[20%] h-[300px] w-[300px] rounded-full bg-violet-500/15 blur-[90px] animate-float-medium" />
+        <div className="absolute bottom-[-5%] right-[-5%] h-[350px] w-[350px] rounded-full bg-emerald-500/15 blur-[100px] animate-float-slow" />
       </div>
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="relative z-10 w-full max-w-md mx-auto space-y-6"
-      >
-        <Link
-          to="/rooms"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-zinc-400 hover:text-white transition-colors mb-2"
-        >
-          <ArrowLeft size={16} />
-          Back to rooms
-        </Link>
 
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] p-6 sm:p-8 space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Create Room</h1>
-            <p className="text-sm text-zinc-400 mt-1.5 font-medium">
-              Start a new shared expense ledger with roommates.
-            </p>
+      {/* 2. Technical digital Grid overlay */}
+      <div className="absolute inset-0 tech-grid pointer-events-none opacity-50 z-0" />
+
+      {/* 3. Simulated Device Mock Frame */}
+      <div className="relative z-10 w-full max-w-md min-h-screen sm:min-h-0 sm:h-[820px] sm:rounded-[36px] sm:border sm:border-white/10 sm:bg-black/35 sm:backdrop-blur-xl sm:shadow-[0_0_80px_rgba(0,0,0,0.9),0_0_2px_rgba(255,255,255,0.1),inset 0 0 24px rgba(255,255,255,0.01)] flex flex-col justify-center px-6 py-12 sm:px-8 sm:py-10 overflow-hidden">
+        
+        {/* Device Notch element for luxury visual detail */}
+        <div className="hidden sm:flex absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5.5 bg-black rounded-b-xl border-x border-b border-white/5 z-50 items-center justify-center">
+          <div className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center">
+            <div className="w-1 h-1 rounded-full bg-blue-900" />
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <Input
-              label="Room Name"
-              placeholder="e.g. Apartment 4B, Sweet Home"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="h-13 border-white/10 bg-white/5 text-white placeholder:text-zinc-500 focus-visible:border-[#22C55E] focus-visible:ring-[#22C55E]"
-            />
-
-            {createMutation.isError && (
-              <div className="rounded-xl bg-red-50 border border-red-100 p-3.5 text-xs font-semibold text-red-600">
-                Failed to create room. Please try again.
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              loading={createMutation.isPending}
-              className="h-14 w-full rounded-2xl bg-[#22C55E] text-base font-bold hover:bg-[#16A34A]"
-            >
-              Create Room
-            </Button>
-          </form>
         </div>
-      </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 350, damping: 25 }}
+          className="w-full max-w-sm mx-auto space-y-5.5 relative"
+        >
+          <Link
+            to="/rooms"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition-colors mb-2 uppercase tracking-wider pl-1"
+          >
+            <ArrowLeft size={14} />
+            Back to rooms
+          </Link>
+
+          <div className="glass-panel border border-white/12 rounded-[32px] p-7 space-y-6 bg-white/[0.04] shadow-[0_20px_40px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.15)]">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-extrabold text-white tracking-tight font-heading">Create Room</h1>
+              <p className="text-xs font-semibold text-slate-400 leading-relaxed">
+                Start a new shared expense ledger room with roommates.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <Input
+                label="Room Name"
+                placeholder="Apartment 4B, Sweet Home..."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                startIcon={<Home className="w-4 h-4 text-emerald-400" />}
+                required
+              />
+
+              {createMutation.isError && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-3.5 text-xs font-semibold text-rose-300"
+                >
+                  Failed to create room. Please try again.
+                </motion.div>
+              )}
+
+              <Button
+                type="submit"
+                loading={createMutation.isPending}
+                className="h-13 w-full rounded-2xl text-sm font-bold mt-2"
+              >
+                Create Room
+              </Button>
+            </form>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
