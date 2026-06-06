@@ -54,6 +54,10 @@ export default function HomePage() {
       null
     );
 
+  const currentBalance = dashboard?.balances?.find(
+    (b) => b.userId === user.id
+  );
+
   const fetchDashboard = async () => {
     try {
       const roomsResponse =
@@ -133,6 +137,47 @@ export default function HomePage() {
         </p>
       </div>
 
+
+
+            <div className="mb-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
+  <p className="text-zinc-400">
+    Settlement Status
+  </p>
+
+  {currentBalance?.balance > 0 ? (
+    <>
+      <h2 className="mt-2 text-3xl font-bold text-lime-400">
+        +₹{currentBalance.balance}
+      </h2>
+
+      <p className="mt-2 text-sm text-zinc-500">
+        Others owe you money
+      </p>
+    </>
+  ) : currentBalance?.balance < 0 ? (
+    <>
+      <h2 className="mt-2 text-3xl font-bold text-red-400">
+        ₹{Math.abs(
+          currentBalance.balance
+        )}
+      </h2>
+
+      <p className="mt-2 text-sm text-zinc-500">
+        You need to settle this amount
+      </p>
+    </>
+  ) : (
+    <>
+      <h2 className="mt-2 text-3xl font-bold text-lime-400">
+        ₹0
+      </h2>
+
+      <p className="mt-2 text-sm text-zinc-500">
+        All settled 🎉
+      </p>
+    </>
+  )}
+</div>
       {/* Quick Actions */}
 
       <div className="mb-6">
