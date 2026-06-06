@@ -144,7 +144,7 @@ export default function HomePage() {
     Settlement Status
   </p>
 
-  {currentBalance?.balance > 0 ? (
+  {(currentBalance?.balance ?? 0) > 0 ? (
     <>
       <h2 className="mt-2 text-3xl font-bold text-lime-400">
         +₹{currentBalance.balance}
@@ -154,12 +154,12 @@ export default function HomePage() {
         Others owe you money
       </p>
     </>
-  ) : currentBalance?.balance < 0 ? (
+  ) : (currentBalance?.balance ?? 0) < 0 ? (
     <>
       <h2 className="mt-2 text-3xl font-bold text-red-400">
         ₹{Math.abs(
-          currentBalance.balance
-        )}
+  currentBalance?.balance ?? 0
+)}
       </h2>
 
       <p className="mt-2 text-sm text-zinc-500">
