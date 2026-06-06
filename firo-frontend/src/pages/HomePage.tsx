@@ -147,7 +147,7 @@ export default function HomePage() {
   {(currentBalance?.balance ?? 0) > 0 ? (
     <>
       <h2 className="mt-2 text-3xl font-bold text-lime-400">
-        +₹{currentBalance.balance}
+        +₹{Math.abs(currentBalance?.balance ?? 0)}
       </h2>
 
       <p className="mt-2 text-sm text-zinc-500">
