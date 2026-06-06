@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
-
+import { useNavigate } from "react-router-dom";
 interface Member {
   userId: {
     _id: string;
@@ -24,7 +24,7 @@ interface Room {
 
 export default function RoomDetailsPage() {
   const { roomId } = useParams();
-
+const navigate = useNavigate();
   const [room, setRoom] = useState<Room | null>(
     null
   );
@@ -93,6 +93,17 @@ export default function RoomDetailsPage() {
           {room.inviteCode}
         </h2>
       </div>
+
+      <button
+  onClick={() =>
+    navigate(
+      `/rooms/${room._id}/add-expense`
+    )
+  }
+  className="mb-6 w-full rounded-2xl bg-lime-500 p-4 font-semibold text-black"
+>
+  Add Expense
+</button>
 
       {/* Overview */}
 

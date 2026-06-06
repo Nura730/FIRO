@@ -46,51 +46,42 @@ export default function AppRouter() {
         {/* Protected Routes */}
 
         <Route
-          element={
-            <ProtectedRoute>
-              <AppLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route
-            path="/home"
-            element={<HomePage />}
-          />
+  element={
+    <ProtectedRoute>
+      <AppLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route
+    path="/home"
+    element={<HomePage />}
+  />
 
-          <Route
-            path="/rooms"
-            element={<RoomsPage />}
-          />
+  <Route
+    path="/rooms"
+    element={<RoomsPage />}
+  />
 
-          <Route
-            path="/activity"
-            element={<ActivityPage />}
-          />
+  <Route
+    path="/rooms/:roomId"
+    element={<RoomDetailsPage />}
+  />
 
-          <Route
-            path="/profile"
-            element={<ProfilePage />}
-          />
+  <Route
+    path="/rooms/:roomId/add-expense"
+    element={<AddExpensePage />}
+  />
 
-          <Route
-            path="/expense/add"
-            element={<AddExpensePage />}
-          />
-        </Route>
+  <Route
+    path="/activity"
+    element={<ActivityPage />}
+  />
 
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/home"
-              replace
-            />
-          }
-        />
-        <Route
-  path="/rooms/:roomId"
-  element={<RoomDetailsPage />}
-/>
+  <Route
+    path="/profile"
+    element={<ProfilePage />}
+  />
+</Route>
       </Routes>
     </BrowserRouter>
   );
