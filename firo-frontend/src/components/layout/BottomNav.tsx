@@ -44,7 +44,7 @@ export default function BottomNav() {
         </NavLink>
 
         <NavLink
-          to="/expense/add"
+          to="/rooms"
           className={navClass}
         >
           <PlusCircle size={28} />

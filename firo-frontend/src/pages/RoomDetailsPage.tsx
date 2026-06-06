@@ -22,12 +22,43 @@ interface Room {
   updatedAt: string;
 }
 
+interface Expense {
+  _id: string;
+  title: string;
+  amount: number;
+  category: string;
+  paidBy: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+}
+
+interface Settlement {
+  from: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  to: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  amount: number;
+}
+
 export default function RoomDetailsPage() {
   const { roomId } = useParams();
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [room, setRoom] = useState<Room | null>(
     null
   );
+  const [settlements, setSettlements] = useState<
+  Settlement[]
+>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -45,12 +76,38 @@ const navigate = useNavigate();
       setLoading(false);
     }
   };
+const fetchExpenses = async () => {
+  try {
+    const response = await api.get(
+      `/expenses/room/${roomId}`
+    );
 
-  useEffect(() => {
-    if (roomId) {
-      fetchRoom();
-    }
-  }, [roomId]);
+    setExpenses(response.data.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const fetchSettlements = async () => {
+  try {
+    const response = await api.get(
+      `/settlements/room/${roomId}`
+    );
+
+    setSettlements(
+      response.data.data.settlements
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+useEffect(() => {
+  if (roomId) {
+    fetchRoom();
+    fetchExpenses();
+    fetchSettlements();
+  }
+}, [roomId]);
 
   if (loading) {
     return (
@@ -124,7 +181,7 @@ const navigate = useNavigate();
           </p>
 
           <h3 className="mt-2 text-2xl font-bold">
-            0
+            {expenses.length}
           </h3>
         </div>
       </div>
@@ -175,26 +232,91 @@ const navigate = useNavigate();
           Expenses
         </h2>
 
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5">
-          <p className="text-zinc-400">
-            No expenses yet.
-          </p>
+        <>
+  {expenses.length === 0 ? (
+    <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5">
+      <p className="text-zinc-400">
+        No expenses yet.
+      </p>
+    </div>
+  ) : (
+    <div className="space-y-3">
+      {expenses.map((expense) => (
+        <div
+          key={expense._id}
+          className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4"
+        >
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-semibold">
+                {expense.title}
+              </h3>
+
+              <p className="mt-1 text-sm text-zinc-400">
+                Paid by{" "}
+                {expense.paidBy.name}
+              </p>
+
+              <p className="mt-1 text-xs text-zinc-500">
+                {expense.category}
+              </p>
+            </div>
+
+            <div className="text-right">
+              <p className="text-lg font-bold text-lime-400">
+                ₹{expense.amount}
+              </p>
+            </div>
+          </div>
         </div>
+      ))}
+    </div>
+  )}
+</>
       </div>
 
       {/* Settlements */}
 
       <div>
-        <h2 className="mb-4 text-xl font-semibold">
-          Settlements
-        </h2>
+  <h2 className="mb-4 text-xl font-semibold">
+    Settlements
+  </h2>
 
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5">
-          <p className="text-zinc-400">
-            No settlements available.
-          </p>
-        </div>
-      </div>
+  {settlements.length === 0 ? (
+    <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-5">
+      <p className="text-zinc-400">
+        No settlements available.
+      </p>
+    </div>
+  ) : (
+    <div className="space-y-3">
+      {settlements.map(
+        (settlement, index) => (
+          <div
+            key={index}
+            className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4"
+          >
+            <p className="font-medium">
+              {settlement.from.name}
+            </p>
+
+            <p className="text-sm text-zinc-400">
+              owes
+            </p>
+
+            <p className="font-medium">
+              {settlement.to.name}
+            </p>
+
+            <p className="mt-2 text-lg font-bold text-lime-400">
+              ₹{settlement.amount}
+            </p>
+          </div>
+        )
+      )}
+    </div>
+  )}
+</div>
     </div>
   );
 }
