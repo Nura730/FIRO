@@ -7,94 +7,107 @@ import {
   PlusCircle,
   Receipt,
   ArrowRight,
+  ArrowsLeftRight,
 } from "phosphor-react";
 
-interface Room {
-  _id: string;
-  name: string;
-}
-
-interface DashboardData {
-  roomName: string;
-  memberCount: number;
-  expenseCount: number;
-  totalExpenses: number;
-
-  recentExpenses: {
-    _id: string;
-    title: string;
-    amount: number;
-    category: string;
-    createdAt: string;
-  }[];
-
-  balances: {
-    userId: string;
-    name: string;
-    email: string;
-    balance: number;
-  }[];
-}
+import type { Room } from "../types/room";
+import type { DashboardData } from "../types/dashboard";
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   const user = JSON.parse(
     localStorage.getItem("user") || "{}"
   );
-  console.log(user)
-  const navigate = useNavigate();
 
   const [loading, setLoading] =
     useState(true);
 
-  const [roomCount, setRoomCount] =
-    useState(0);
+  const [rooms, setRooms] = useState<
+    Room[]
+  >([]);
+
+  const [selectedRoomId, setSelectedRoomId] =
+    useState("");
 
   const [dashboard, setDashboard] =
     useState<DashboardData | null>(
       null
     );
 
-  const currentBalance = dashboard?.balances?.find(
-    (b) => b.userId === user.id
-  );
+  const currentBalance =
+    dashboard?.balances.find(
+      (balance) =>
+        balance.userId === user.id
+    );
 
-  const fetchDashboard = async () => {
+  const fetchRooms = async () => {
+    const response =
+      await api.get("/rooms/my-rooms");
+
+    const roomsData =
+      response.data.data || [];
+
+    setRooms(roomsData);
+
+    const savedRoom =
+      localStorage.getItem(
+        "selectedRoomId"
+      );
+
+    const roomId =
+      savedRoom &&
+      roomsData.some(
+        (room: Room) =>
+          room._id === savedRoom
+      )
+        ? savedRoom
+        : roomsData[0]?._id;
+
+    if (roomId) {
+      setSelectedRoomId(roomId);
+    }
+  };
+
+  const fetchDashboard = async (
+    roomId: string
+  ) => {
     try {
-      const roomsResponse =
-        await api.get(
-          "/rooms/my-rooms"
-        );
-
-      const rooms: Room[] =
-        roomsResponse.data.data || [];
-
-      setRoomCount(rooms.length);
-
-      if (!rooms.length) {
-        setLoading(false);
-        return;
-      }
-
-      const roomId = rooms[0]._id;
-
-      const dashboardResponse =
+      const response =
         await api.get(
           `/dashboard/room/${roomId}`
         );
 
       setDashboard(
-        dashboardResponse.data.data
+        response.data.data
       );
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDashboard();
+    const init = async () => {
+      try {
+        await fetchRooms();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    init();
   }, []);
+
+  useEffect(() => {
+    if (!selectedRoomId) return;
+
+    localStorage.setItem(
+      "selectedRoomId",
+      selectedRoomId
+    );
+
+    fetchDashboard(selectedRoomId);
+  }, [selectedRoomId]);
 
   if (loading) {
     return (
@@ -104,197 +117,261 @@ export default function HomePage() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-black p-4 text-white">
-      {/* Header */}
+  if (!rooms.length) {
+    return (
+      <div className="min-h-screen bg-black p-4 text-white">
+        <div className="mt-20 text-center">
+          <h1 className="mb-4 text-3xl font-bold">
+            Welcome 👋
+          </h1>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">
-          Welcome, {user.name || ""} 👋
-        </h1>
+          <p className="mb-8 text-zinc-400">
+            Create your first workspace
+            to start tracking expenses.
+          </p>
 
-        <p className="mt-2 text-zinc-400">
-          Manage shared expenses easily
-        </p>
-      </div>
-
-      {/* Balance */}
-
-      <div className="mb-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-        <p className="text-zinc-400">
-          Total Expenses
-        </p>
-
-        <h2 className="mt-2 text-4xl font-bold text-lime-400">
-          ₹
-          {dashboard?.totalExpenses ||
-            0}
-        </h2>
-
-        <p className="mt-2 text-sm text-zinc-500">
-          {dashboard?.roomName ||
-            "No room selected"}
-        </p>
-      </div>
-
-
-
-            <div className="mb-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
-  <p className="text-zinc-400">
-    Settlement Status
-  </p>
-
-  {(currentBalance?.balance ?? 0) > 0 ? (
-    <>
-      <h2 className="mt-2 text-3xl font-bold text-lime-400">
-        +₹{Math.abs(currentBalance?.balance ?? 0)}
-      </h2>
-
-      <p className="mt-2 text-sm text-zinc-500">
-        Others owe you money
-      </p>
-    </>
-  ) : (currentBalance?.balance ?? 0) < 0 ? (
-    <>
-      <h2 className="mt-2 text-3xl font-bold text-red-400">
-        ₹{Math.abs(
-  currentBalance?.balance ?? 0
-)}
-      </h2>
-
-      <p className="mt-2 text-sm text-zinc-500">
-        You need to settle this amount
-      </p>
-    </>
-  ) : (
-    <>
-      <h2 className="mt-2 text-3xl font-bold text-lime-400">
-        ₹0
-      </h2>
-
-      <p className="mt-2 text-sm text-zinc-500">
-        All settled 🎉
-      </p>
-    </>
-  )}
-</div>
-      {/* Quick Actions */}
-
-      <div className="mb-6">
-        <h3 className="mb-4 text-lg font-semibold">
-          Quick Actions
-        </h3>
-
-        <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() =>
               navigate("/rooms")
             }
-            className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 text-left"
+            className="rounded-2xl bg-lime-500 px-6 py-3 font-semibold text-black"
           >
-            <Users
-              size={24}
-              className="mb-3 text-lime-400"
-            />
-
-            <h4 className="font-medium">
-              Rooms
-            </h4>
-
-            <p className="mt-1 text-sm text-zinc-400">
-              Manage rooms
-            </p>
+            Go To Rooms
           </button>
+        </div>
+      </div>
+    );
+  }
 
+  return (
+    <div className="min-h-screen bg-black p-4 pb-24 text-white">
+      {/* Header */}
+
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">
+          Welcome, {user.name} 👋
+        </h1>
+
+        <p className="mt-2 text-zinc-400">
+          FIRO 2.0 Dashboard
+        </p>
+      </div>
+
+      {/* Workspace Selector */}
+
+      <div className="mb-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-5">
+        <p className="mb-2 text-sm text-zinc-400">
+          Current Workspace
+        </p>
+
+        <select
+          value={selectedRoomId}
+          onChange={(e) =>
+            setSelectedRoomId(
+              e.target.value
+            )
+          }
+          className="w-full rounded-xl border border-zinc-700 bg-zinc-800 p-3 outline-none"
+        >
+          {rooms.map((room) => (
+            <option
+              key={room._id}
+              value={room._id}
+            >
+              {room.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Stats */}
+
+      <div className="mb-6 grid grid-cols-2 gap-4">
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4">
+          <p className="text-sm text-zinc-400">
+            You Owe
+          </p>
+
+          <h3 className="mt-2 text-2xl font-bold text-red-400">
+            ₹
+            {currentBalance &&
+            currentBalance.balance < 0
+              ? Math.abs(
+                  currentBalance.balance
+                )
+              : 0}
+          </h3>
+        </div>
+
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4">
+          <p className="text-sm text-zinc-400">
+            You Receive
+          </p>
+
+          <h3 className="mt-2 text-2xl font-bold text-lime-400">
+            ₹
+            {currentBalance &&
+            currentBalance.balance > 0
+              ? currentBalance.balance
+              : 0}
+          </h3>
+        </div>
+
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4">
+          <p className="text-sm text-zinc-400">
+            Expenses
+          </p>
+
+          <h3 className="mt-2 text-2xl font-bold">
+            {
+              dashboard?.expenseCount
+            }
+          </h3>
+        </div>
+
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-4">
+          <p className="text-sm text-zinc-400">
+            Settlements
+          </p>
+
+          <h3 className="mt-2 text-2xl font-bold">
+            {
+              dashboard?.totalSettlements
+            }
+          </h3>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+
+      <div className="mb-6">
+        <h2 className="mb-4 text-lg font-semibold">
+          Quick Actions
+        </h2>
+
+        <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() =>
-              navigate("/rooms")
+              navigate(
+                `/rooms/${selectedRoomId}/add-expense`
+              )
             }
             className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 text-left"
           >
             <PlusCircle
               size={24}
-              className="mb-3 text-lime-400"
-            />
-
-            <h4 className="font-medium">
-              Add Expense
-            </h4>
-
-            <p className="mt-1 text-sm text-zinc-400">
-              Create expense
-            </p>
-          </button>
-        </div>
-      </div>
-
-      {/* Overview */}
-
-      <div className="mb-6">
-        <h3 className="mb-4 text-lg font-semibold">
-          Overview
-        </h3>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-            <Receipt
-              size={24}
               className="mb-2 text-lime-400"
             />
 
-            <h4 className="text-2xl font-bold">
-              {dashboard?.expenseCount ||
-                0}
-            </h4>
+            Add Expense
+          </button>
 
-            <p className="text-sm text-zinc-400">
-              Expenses
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+          <button
+            onClick={() =>
+              navigate("/rooms")
+            }
+            className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 text-left"
+          >
             <Users
               size={24}
               className="mb-2 text-lime-400"
             />
 
-            <h4 className="text-2xl font-bold">
-              {roomCount}
-            </h4>
+            Rooms
+          </button>
 
-            <p className="text-sm text-zinc-400">
-              Rooms
-            </p>
-          </div>
+          <button
+            onClick={() =>
+              navigate("/activity")
+            }
+            className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 text-left"
+          >
+            <Receipt
+              size={24}
+              className="mb-2 text-lime-400"
+            />
+
+            Activity
+          </button>
+
+          <button
+            onClick={() =>
+              navigate(
+                `/rooms/${selectedRoomId}`
+              )
+            }
+            className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 text-left"
+          >
+            <ArrowsLeftRight
+              size={24}
+              className="mb-2 text-lime-400"
+            />
+
+            Workspace
+          </button>
         </div>
       </div>
 
-      {/* Members */}
+      {/* Workspaces */}
 
-      <div className="mb-6 rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-        <p className="text-sm text-zinc-400">
-          Members
-        </p>
+      <div className="mb-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            Workspaces
+          </h2>
 
-        <h3 className="mt-2 text-3xl font-bold">
-          {dashboard?.memberCount ||
-            0}
-        </h3>
+          <button
+            onClick={() =>
+              navigate("/rooms")
+            }
+            className="text-lime-400"
+          >
+            View All
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {rooms.map((room) => (
+            <div
+              key={room._id}
+              onClick={() =>
+                setSelectedRoomId(
+                  room._id
+                )
+              }
+              className={`cursor-pointer rounded-2xl border p-4 ${
+                selectedRoomId ===
+                room._id
+                  ? "border-lime-500 bg-lime-500/10"
+                  : "border-zinc-800 bg-zinc-900"
+              }`}
+            >
+              <h3 className="font-semibold">
+                {room.name}
+              </h3>
+
+              <p className="mt-1 text-sm text-zinc-400">
+                {room.members.length}{" "}
+                Members
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Recent Activity */}
 
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">
+          <h2 className="text-lg font-semibold">
             Recent Activity
-          </h3>
+          </h2>
 
           <button
             onClick={() =>
               navigate("/activity")
             }
-            className="flex items-center gap-1 text-sm text-lime-400"
+            className="flex items-center gap-1 text-lime-400"
           >
             View All
             <ArrowRight size={16} />
@@ -310,7 +387,7 @@ export default function HomePage() {
                   key={expense._id}
                   className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between">
                     <div>
                       <h4 className="font-medium">
                         {
@@ -325,21 +402,19 @@ export default function HomePage() {
                       </p>
                     </div>
 
-                    <span className="font-bold text-lime-400">
+                    <p className="font-bold text-lime-400">
                       ₹
                       {
                         expense.amount
                       }
-                    </span>
+                    </p>
                   </div>
                 </div>
               )
             )
           ) : (
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-              <p className="text-zinc-400">
-                No recent activity
-              </p>
+              No activity found
             </div>
           )}
         </div>

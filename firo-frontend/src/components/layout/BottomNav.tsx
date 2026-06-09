@@ -14,14 +14,14 @@ export default function BottomNav() {
   }: {
     isActive: boolean;
   }) =>
-    `flex flex-col items-center gap-1 ${
+    `flex flex-col items-center gap-1 transition ${
       isActive
         ? "text-lime-400"
         : "text-zinc-500"
     }`;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-zinc-950 px-4 py-3">
+    <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-zinc-950/95 px-4 py-3 backdrop-blur">
       <div className="mx-auto flex max-w-md items-center justify-between">
         <NavLink
           to="/home"
@@ -39,7 +39,7 @@ export default function BottomNav() {
         >
           <Users size={22} />
           <span className="text-xs">
-            Rooms
+            Workspaces
           </span>
         </NavLink>
 
